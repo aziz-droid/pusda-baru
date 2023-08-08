@@ -254,7 +254,7 @@ export const EditBagianSrAdmin = () => {
                 </div> */}
 
         <form className="d-flex form-tambah-tanah gap-5">
-          <div className="left-form d-flex flex-col gap-3">
+          <div className="left-form d-flex flex-col gap-3 w-100">
             <div>
               <label htmlFor="sertifikat-jenispemanfaatan">
                 Jenis Perikatan
@@ -395,7 +395,7 @@ export const EditBagianSrAdmin = () => {
               />
             </div>
           </div>
-          <div className="right-form d-flex flex-col gap-3">
+          <div className="right-form d-flex flex-col gap-3 w-100">
             <div>
               <label htmlFor="nomor-perikatan">Nomor Perikatan</label>
               <input
@@ -440,24 +440,25 @@ export const EditBagianSrAdmin = () => {
                 }
               ></textarea>
             </div>
-            <div className="d-flex flex-col">
+            <div className="d-flex flex-col ">
               <label className="font-semibold">Surat Perjanjian</label>
               <label
                 htmlFor="surat-perjanjian"
                 className="font-semibold file-input d-flex flex-col justify-content-center align-items-center"
               >
-                <p className="p-0 m-0">
+                <p className="">
                   Drag & drop files or{" "}
                   <span style={{ color: "#483EA8" }}>Browse</span>
                 </p>
-                <p className="secondary-text">
-                  Supported formates: JPEG, PNG, GIF, MP4, PDF, PSD, AI, Word,
-                  PPT
+                <p className="secondary-text ">
+                Supported formates: PDF
+
                 </p>
               </label>
               <input
                 type="file"
-                className="d-none"
+                accept="application/pdf"
+                className="d-none "
                 id="surat-perjanjian"
                 ref={uploadRef}
                 onChange={(e) => {
@@ -481,12 +482,13 @@ export const EditBagianSrAdmin = () => {
                   <span style={{ color: "#483EA8" }}>Browse</span>
                 </p>
                 <p className="secondary-text">
-                  Supported formates: JPEG, PNG, GIF, MP4, PDF, PSD, AI, Word,
-                  PPT
+                Supported formates: PDF
+
                 </p>
               </label>
               <input
                 type="file"
+                accept="application/pdf"
                 className="d-none"
                 ref={uploadRef2}
                 id="surat-permohonan"

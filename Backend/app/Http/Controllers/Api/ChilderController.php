@@ -289,10 +289,14 @@ class ChilderController extends Controller
 
         try {
             if ($request->hasFile('application_letter')) {
-                $file_application = $request->file('application_letter')->store('public/documents/applicationletter');
+
+                $application_letter = time() .  '.' . $request->application_letter->extension();
+                $request->file('application_letter')->storeAs('public/documents/applicationletter', $application_letter);
             }
             if ($request->hasFile('agreement_letter')) {
-                $file_agreement = $request->file('agreement_letter')->store('public/documents/agreementletter');
+
+                $agreement_letter = time() .  '.' . $request->agreement_letter->extension();
+                $request->file('agreement_letter')->storeAs('public/documents/agreementletter', $agreement_letter);
             }
 
             $childer = Childer::create([
@@ -309,8 +313,8 @@ class ChilderController extends Controller
                 'engagement_number' => $request->engagement_number,
                 'engagement_date' => $request->engagement_date,
                 'description' => $request->description,
-                'application_letter' => isset($file_application) ? $file_application : '',
-                'agreement_letter' => isset($file_agreement) ? $file_agreement : '',
+                'application_letter' => isset($application_letter) ? $application_letter : '',
+                'agreement_letter' => isset($agreement_letter) ? $agreement_letter : '',
             ]);
 
             $data = Childer::where('id', $childer->id)->with(['parent'])->get();
@@ -352,10 +356,14 @@ class ChilderController extends Controller
 
         try {
             if ($request->hasFile('application_letter')) {
-                $file_application = $request->file('application_letter')->store('public/documents/applicationletter');
+
+                $application_letter = time() .  '.' . $request->application_letter->extension();
+                $request->file('application_letter')->storeAs('public/documents/applicationletter', $application_letter);
             }
             if ($request->hasFile('agreement_letter')) {
-                $file_agreement = $request->file('agreement_letter')->store('public/documents/agreementletter');
+
+                $agreement_letter = time() .  '.' . $request->agreement_letter->extension();
+                $request->file('agreement_letter')->storeAs('public/documents/agreementletter', $agreement_letter);
             }
 
             $childer = Childer::create([
@@ -371,8 +379,8 @@ class ChilderController extends Controller
                 'engagement_number' => $request->engagement_number,
                 'engagement_date' => $request->engagement_date,
                 'description' => $request->description,
-                'application_letter' => $file_application,
-                'agreement_letter' => $file_agreement,
+                'application_letter' => $application_letter,
+                'agreement_letter' => $agreement_letter,
                 'year' => $request->year,
                 'payment_amount' => $request->payment_amount,
                 'proof_of_payment' => $request->proof_of_payment
@@ -532,10 +540,14 @@ class ChilderController extends Controller
 
         try {
             if ($request->hasFile('application_letter')) {
-                $file_application = $request->file('application_letter')->store('public/documents');
+
+                $application_letter = time() .  '.' . $request->application_letter->extension();
+                $request->file('application_letter')->storeAs('public/documents/applicationletter', $application_letter);
             }
             if ($request->hasFile('agreement_letter')) {
-                $file_agreement = $request->file('agreement_letter')->store('public/documents');
+
+                $agreement_letter = time() .  '.' . $request->agreement_letter->extension();
+                $request->file('agreement_letter')->storeAs('public/documents/agreementletter', $agreement_letter);
             }
 
 
@@ -559,8 +571,8 @@ class ChilderController extends Controller
                 'engagement_number' => $request->engagement_number,
                 'engagement_date' => $request->engagement_date,
                 'description' => $request->description,
-                'application_letter' => isset($file_application) ? $file_application : '',
-                'agreement_letter' => isset($file_agreement) ? $file_agreement : '',
+                'application_letter' => isset($application_letter) ? $application_letter : '',
+                'agreement_letter' => isset($agreement_letter) ? $agreement_letter : '',
             ]);
             $childer->save();
 
@@ -601,10 +613,14 @@ class ChilderController extends Controller
 
         try {
             if ($request->hasFile('application_letter')) {
-                $file_application = $request->file('application_letter')->store('public/documents');
+
+                $application_letter = time() .  '.' . $request->application_letter->extension();
+                $request->file('application_letter')->storeAs('public/documents/applicationletter', $application_letter);
             }
             if ($request->hasFile('agreement_letter')) {
-                $file_agreement = $request->file('agreement_letter')->store('public/documents');
+
+                $agreement_letter = time() .  '.' . $request->agreement_letter->extension();
+                $request->file('agreement_letter')->storeAs('public/documents/agreementletter', $agreement_letter);
             }
 
 
@@ -627,8 +643,8 @@ class ChilderController extends Controller
                 'engagement_number' => $request->engagement_number,
                 'engagement_date' => $request->engagement_date,
                 'description' => $request->description,
-                'application_letter' => $file_application,
-                'agreement_letter' => $file_agreement,
+                'application_letter' => $application_letter,
+                'agreement_letter' => $agreement_letter,
                 'year' => $request->year,
                 'payment_amount' => $request->payment_amount,
                 'proof_of_payment' => $request->proof_of_payment

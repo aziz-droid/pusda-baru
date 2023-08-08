@@ -271,9 +271,9 @@ export const DetailBagianSrAdmin = () => {
                             <h5 className="filename">
                                 <a
                                     href={
-                                        backendUrl + children.agreement_letter
+                                        backendUrl + `agreementletter/` + children.agreement_letter
                                     }
-                                    target="_blank"
+                                    target="_blank" rel="noreferrer"
                                 >
                                     SURAT PERJANJIAN-1.PDF
                                 </a>
@@ -286,9 +286,9 @@ export const DetailBagianSrAdmin = () => {
                             <h5 className="filename">
                                 <a
                                     href={
-                                        backendUrl + children.application_letter
+                                        backendUrl + `applicationletter/` + children.application_letter
                                     }
-                                    target="_blank"
+                                    target="_blank" rel="noreferrer"
                                 >
                                     SURAT PERMOHONAN-1.PDF
                                 </a>

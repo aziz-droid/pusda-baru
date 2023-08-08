@@ -196,12 +196,12 @@ export const ModalPembayaran = ({
                   <span style={{ color: "#483EA8" }}>Browse</span>
                 </p>
                 <p className="secondary-text">
-                  Supported formates: JPEG, PNG, GIF, MP4, PDF, PSD, AI, Word,
-                  PPT
+                  Supported formates: JPEG, PDF
                 </p>
               </label>
               <input
                 type="file"
+                accept="application/pdf, image/jpeg, image/jpg"
                 className="d-none"
                 id="surat-permohonan"
                 ref={uploadRef}

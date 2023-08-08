@@ -94,13 +94,13 @@ export const Login = () => {
             {/* pict */}
             <div className="hero-picture">
                 <div className="bg-cyanblue">
-                    <img src="coverimg.png" alt="home cover" />
+                    <img src="simamat/coverimg.png" alt="home cover" />
                 </div>
             </div>
 
             {/* form */}
             <div className="d-flex flex-col justify-content-center align-items-center w-100">
-                <img className="hero-logo" src="/logo.png" alt="logo" />
+                <img className="hero-logo" src="simamat/logo.png" alt="logo" />
                 <h2 className="font-semibold">Selamat Datang!</h2>
                 <p>Masuk dengan akun milikmu yang sudah terdaftar.</p>
                 <LoginForm />

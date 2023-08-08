@@ -41,6 +41,7 @@ export const TambahBagianSrAdmin = () => {
       }
       formData.append("token", token);
 
+    //   console.log({children})
       let res = await fetch(apiUrl + "childer/create", {
         method: "POST",
         body: formData,
@@ -215,7 +216,7 @@ export const TambahBagianSrAdmin = () => {
         </div> */}
 
         <form className="d-flex form-tambah-tanah gap-5">
-          <div className="left-form d-flex flex-col gap-3">
+          <div className="left-form d-flex flex-col gap-3 w-100">
             <div>
               <label htmlFor="sertifikat-jenispemanfaatan">
                 Penggunaan/Pemanfaatan
@@ -361,7 +362,7 @@ export const TambahBagianSrAdmin = () => {
               />
             </div>
           </div>
-          <div className="right-form d-flex flex-col gap-3">
+          <div className="right-form d-flex flex-col gap-3 w-100">
             <div>
               <label htmlFor="nomor-perikatan">Nomor Perikatan</label>
               <input
@@ -419,12 +420,13 @@ export const TambahBagianSrAdmin = () => {
                   <span style={{ color: "#483EA8" }}>Browse</span>
                 </p>
                 <p className="secondary-text">
-                  Supported formates: JPEG, PNG, GIF, MP4, PDF, PSD, AI, Word,
-                  PPT
+                Supported formates: PDF
+
                 </p>
               </label>
               <input
                 type="file"
+                accept="application/pdf"
                 className="d-none"
                 id="surat-perjanjian"
                 ref={uploadRef}
@@ -451,12 +453,12 @@ export const TambahBagianSrAdmin = () => {
                   <span style={{ color: "#483EA8" }}>Browse</span>
                 </p>
                 <p className="secondary-text">
-                  Supported formates: JPEG, PNG, GIF, MP4, PDF, PSD, AI, Word,
-                  PPT
+                  Supported formates: PDF
                 </p>
               </label>
               <input
                 type="file"
+                accept="application/pdf"
                 className="d-none"
                 ref={uploadRef2}
                 id="surat-permohonan"

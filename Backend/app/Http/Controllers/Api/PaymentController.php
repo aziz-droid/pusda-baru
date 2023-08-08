@@ -122,7 +122,7 @@ class PaymentController extends Controller
         $validation = Validator::make($request->only('childrens_id', 'year', 'proof_of_payment', 'payment_amount'), [
             'childrens_id' => 'required|integer',
             'year' => 'required',
-            'proof_of_payment' => 'required|mimes:pdf',
+            'proof_of_payment' => 'required|mimes:pdf,jpg,jpeg',
             'payment_amount' => 'required'
         ]);
 
@@ -133,7 +133,10 @@ class PaymentController extends Controller
         try {
 
             if ($request->hasFile('proof_of_payment')) {
-                $file = $request->file('proof_of_payment')->store('public/documents/proofofpayment');
+                // $file = $request->file('proof_of_payment')->store('public/documents/proofofpayment');
+
+                $file = time() .  '.' . $request->proof_of_payment->extension();
+                $request->file('proof_of_payment')->storeAs('public/documents/proofofpayment', $file);
             }
 
             $payment = Payment::create([
@@ -206,7 +209,9 @@ class PaymentController extends Controller
     {
         try {
             if ($request->hasFile('proof_of_payment')) {
-                $file = $request->file('proof_of_payment')->store('public/documents');
+                // $file = $request->file('proof_of_payment')->store('public/documents');
+                $file = time() .  '.' . $request->proof_of_payment->extension();
+                $request->file('proof_of_payment')->storeAs('public/documents/proofofpayment', $file);
             }
 
             $parent = Payment::findOrFail($id);

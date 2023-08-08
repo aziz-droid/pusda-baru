@@ -62,8 +62,8 @@ export const TablePembayaran = ({
                     <p className="table-title p-0 m-0">BUKTI PEMBAYARAN</p>
                     <p className="p-0 m-0 filename">
                         <a
-                            href={backendUrl + payment.proof_of_payment}
-                            target="_blank"
+                            href={backendUrl + `proofofpayment/`+payment.proof_of_payment}
+                            target="_blank" rel="noreferrer"
                         >
                             BUKTI
                         </a>

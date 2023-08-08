@@ -79,11 +79,10 @@ export const Navbar = () => {
       </div>
       <Dropdown>
         <Dropdown.Toggle variant="none" id="dropdown-basic">
-          <div className="d-flex align-items-center gap-2 h-100">
+          <div className="d-flex  gap-2 h-100">
             <span>
               Hi, <span className="text-cyanblue font-semibold">{userName}</span>
             </span>
-            <div className="profile-picture bg-cyanblue"></div>
           </div>
         </Dropdown.Toggle>
         <Dropdown.Menu>
