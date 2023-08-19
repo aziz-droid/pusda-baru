@@ -9,6 +9,7 @@ export const TablePembayaran = ({
     setTriggerDeleted,
     setShowEdit,
     setPaymentEdit,
+    urlRedirect
 }) => {
     const backendUrl = process.env.REACT_APP_BACKEND_URL;
     const apiUrl = process.env.REACT_APP_API_URL;
@@ -23,6 +24,7 @@ export const TablePembayaran = ({
         currency: "IDR",
     });
 
+    console.log({urlRedirect})
     return (
         <div>
             <DeleteConfirmation
@@ -30,7 +32,7 @@ export const TablePembayaran = ({
                 handleClose={handleClose}
                 handleShow={handleShow}
                 urlDelete={apiUrl + "payment/delete/" + payment.id}
-                urlRedirect={null}
+                urlRedirect={urlRedirect}
                 triggerDeleted={triggerDeleted}
                 setTriggerDeleted={setTriggerDeleted}
             />

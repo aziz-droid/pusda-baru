@@ -1,14 +1,29 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import LayoutAdmin from "../../../components/Layout/layoutAdmin";
+import { MapContainer, Marker, Popup, TileLayer, useMap,  } from 'react-leaflet'
+import {Icon} from 'leaflet'
+import markerIconPng from "leaflet/dist/images/marker-icon.png"
+
 
 import Swal from "sweetalert2";
+
+
+const center = {
+    lng: 112.73635667066236,
+    lat: -7.246854784171441,
+  };
 
 export const EditBagianPppsAdmin = () => {
     const apiUrl = process.env.REACT_APP_API_URL;
 
     const navigate = useNavigate();
     const params = useParams();
+
+
+    const [position, setPosition] = useState(center);
+    const [latitude, setLatitude] = useState("");
+    const [longitude, setLongitude] = useState("");
 
     const [children, setChildren] = useState({
         parent_id: params.induk_id,
@@ -18,6 +33,8 @@ export const EditBagianPppsAdmin = () => {
         present_condition: "",
         assets_value: "",
         coordinate: "",
+        latitude:"",
+        longitude:"",
         description: "",
     });
 
@@ -95,13 +112,22 @@ export const EditBagianPppsAdmin = () => {
 
                 let resJson = await res.json();
 
-                if (res.status != 200) {
+                if (res.status !== 200) {
                     return console.log(resJson.message);
                 }
 
                 let resData = resJson.data;
 
                 setChildren(resData);
+
+                let center = {
+                    lng: resData.longitude,
+                        lat: resData.latitude
+                }
+                // const center = {
+                //     lng: resData?.longitude,
+                //     lat: resData?.latitude
+                setPosition(center)
             } catch (error) {
                 console.log(error);
             }
@@ -110,6 +136,36 @@ export const EditBagianPppsAdmin = () => {
         fetchInduk().catch(console.error);
     }, []);
 
+    const markerRef = useRef(null);
+
+
+  const eventHandlers = useMemo(
+    () => ({
+      dragend() {
+        const marker = markerRef.current;
+        if (marker != null) {
+          setPosition(marker.getLatLng());
+          
+          setLatitude(marker.getLatLng().lat);
+          setLongitude(marker.getLatLng().lng);
+
+          setChildren({
+            ...children,
+            latitude: marker.getLatLng().lat,
+            longitude: marker.getLatLng().lng,
+          })
+          
+        }
+      },
+    }),
+    [latitude, longitude, children]
+  );
+
+  function ChangeView({ center, zoom }) {
+    const map = useMap();
+    map.setView(center, zoom);
+    return null;
+  }
     return (
         <LayoutAdmin>
             <div
@@ -165,7 +221,7 @@ export const EditBagianPppsAdmin = () => {
                 </div> */}
 
                 <form className="d-flex form-tambah-tanah gap-5">
-                    <div className="left-form d-flex flex-col gap-3">
+                    <div className="left-form d-flex flex-col gap-3  w-100">
                         <div>
                             <label htmlFor="sertifikat-jenispemanfaatan">
                                 Jenis Perikatan
@@ -192,7 +248,7 @@ export const EditBagianPppsAdmin = () => {
                                 </option>
                             </select>
                         </div>
-                        <div>
+                        {/* <div>
                             <label htmlFor="berlaku-dari">Nilai Asset</label>
                             <input
                                 type="text"
@@ -206,7 +262,7 @@ export const EditBagianPppsAdmin = () => {
                                     })
                                 }
                             />
-                        </div>
+                        </div> */}
                         <div>
                             <label htmlFor="peruntukan-pemanfaatan">
                                 Peruntukan Pemanfaatan
@@ -254,23 +310,6 @@ export const EditBagianPppsAdmin = () => {
                                 }
                             />
                         </div>
-                    </div>
-                    <div className="right-form d-flex flex-col gap-3">
-                        <div>
-                            <label htmlFor="koordinat">Koordinat (LS BT)</label>
-                            <input
-                                type="text"
-                                className="w-100"
-                                name="koordinat"
-                                value={children.coordinate}
-                                onChange={(e) =>
-                                    setChildren({
-                                        ...children,
-                                        coordinate: e.target.value,
-                                    })
-                                }
-                            />
-                        </div>
                         <div>
                             <label htmlFor="keterangan">Keterangan</label>
                             <textarea
@@ -285,6 +324,57 @@ export const EditBagianPppsAdmin = () => {
                                 }
                             ></textarea>
                         </div>
+                    </div>
+                    <div className="right-form d-flex flex-col gap-3  w-100">
+                    <div>
+            <MapContainer center={center} zoom={13} scrollWheelZoom={false}>
+            <ChangeView center={position} zoom={12} /> 
+
+                        <TileLayer
+              attribution="&copy; OpenStreetMap"
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+  <Marker  draggable
+              eventHandlers={eventHandlers}
+              position={position}
+              ref={markerRef} icon={new Icon({iconUrl: markerIconPng, iconSize: [25, 41], iconAnchor: [12, 41]})}>
+   
+  </Marker>
+</MapContainer>
+            </div>
+                        <div>
+                            <label htmlFor="latitude">Latitude (LS BT)</label>
+                            <input
+                            disabled
+                                type="text"
+                                className="w-100"
+                                name="latitude"
+                                value={children.latitude}
+                                onChange={(e) =>
+                                    setChildren({
+                                        ...children,
+                                        latitude: e.target.value,
+                                    })
+                                }
+                            />
+                        </div>
+                        <div>
+                            <label htmlFor="longitude">longitude (LS BT)</label>
+                            <input
+                            disabled
+                                type="text"
+                                className="w-100"
+                                name="longitude"
+                                value={children.longitude}
+                                onChange={(e) =>
+                                    setChildren({
+                                        ...children,
+                                        longitude: e.target.value,
+                                    })
+                                }
+                            />
+                        </div>
+                      
                     </div>
                 </form>
             </div>

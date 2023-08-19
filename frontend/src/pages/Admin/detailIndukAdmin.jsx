@@ -6,9 +6,16 @@ import { ButtonDelete } from "../../components/Button/ButtonDelete";
 import { TableBagian } from "../../components/Table/TableBagian";
 import { TableBagianPinjamPakai } from "../../components/Table/TabelBagianPinjamPakai";
 import ReactPaginate from "react-paginate";
+import { MapContainer, Marker,Circle, Popup, TileLayer, useMap, Polygon  } from 'react-leaflet'
+import {Icon, latLng} from 'leaflet'
+import markerIconPng from "leaflet/dist/images/marker-icon.png"
 
 import Swal from "sweetalert2";
 
+const center = {
+    lng: 112.73635667066236,
+    lat: -7.246854784171441,
+  };
 export const DetailIndukAdmin = ({ induk_id }) => {
     const apiUrl = process.env.REACT_APP_API_URL;
 
@@ -32,6 +39,11 @@ export const DetailIndukAdmin = ({ induk_id }) => {
         style: "currency",
         currency: "IDR",
     });
+
+    const [latitude, setLatitude] = useState("");
+  const [longitude, setLongitude] = useState("");
+const [centers, setCenters] = useState(center)
+
 
     const handlePageClick = (e) => {
         if (e.selected >= 0) {
@@ -68,6 +80,17 @@ export const DetailIndukAdmin = ({ induk_id }) => {
 
                 let resData = resJson.data;
                 setInduk(resData);
+                setLatitude(resData?.latitude);
+                setLongitude(resData?.longitude);
+                let center = {
+                    lng: resData.longitude,
+                        lat: resData.latitude
+                }
+                // const center = {
+                //     lng: resData?.longitude,
+                //     lat: resData?.latitude
+                setCenters(center)
+                // }
             } catch (error) {
                 console.log(error);
             }
@@ -176,7 +199,20 @@ export const DetailIndukAdmin = ({ induk_id }) => {
             }
         });
     };
-
+    function ChangeView({ center, zoom }) {
+        const map = useMap();
+        map.setView(center, zoom);
+        return null;
+      }
+      const multiPolygon = [
+        [
+           [-7.236531, 112.72728],
+        [-7.242674, 112.737923],
+        [-7.24438, 112.726936]
+        ],
+      
+      ]
+      
     return (
         <LayoutAdmin>
             <ModalTambahBagian
@@ -228,7 +264,7 @@ export const DetailIndukAdmin = ({ induk_id }) => {
                 </div>
                 <div className="informasi-tanah">
                     <div className="d-flex mx-4">
-                        <div className="left">
+                        <div className="left w-50">
                             <div>
                                 <p className="title p-0 m-0">
                                     Nama/Jenis Barang
@@ -259,7 +295,7 @@ export const DetailIndukAdmin = ({ induk_id }) => {
                                 </div>
                             </div>
                         </div>
-                        <div className="right">
+                        <div className="right w-100">
                             <div>
                                 <p className="title p-0 m-0">Luas Tanah Bidang  (m²)</p>
                                 <p className="font-semibold">{induk.large}</p>
@@ -268,6 +304,20 @@ export const DetailIndukAdmin = ({ induk_id }) => {
                                 <p className="title p-0 m-0">Alamat</p>
                                 <p className="font-semibold">{induk.address}</p>
                             </div>
+                            <div className="">
+                        <MapContainer center={[-7.246854784171441,112.73635667066236]}  zoom={13} scrollWheelZoom={false}>
+                        <ChangeView center={centers} zoom={16} /> 
+
+                        <TileLayer
+              attribution="&copy; OpenStreetMap"
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+            <Marker  position={centers} icon={new Icon({iconUrl: markerIconPng, iconSize: [25, 41], iconAnchor: [12, 41]})} />
+  <Circle center={[latitude, longitude]} radius={induk.large ? induk.large : 0 } icon={new Icon({iconUrl: markerIconPng, iconSize: [25, 41], iconAnchor: [12, 41]})}>
+    
+  </Circle>
+</MapContainer>
+                        </div>
                         </div>
                     </div>
                 </div>

@@ -106,21 +106,23 @@ class ParentController extends Controller
 
         $columns = \Schema::getColumnListing((new Parents)->getTable());
 
-        if( Auth::user()->roles()->pluck('id')[0] === 1  ){
+        if (Auth::user()->roles()->pluck('id')[0] === 1) {
             $parent = Parents::where(
-                "upt", $upt
+                "upt",
+                $upt
             )->where(function ($query) use ($columns, $keyword) {
                 foreach ($columns as $column) {
                     $query->orWhere($column, 'like', "%{$keyword}%");
                 }
             })->orderBy('id', 'DESC')->paginate(10);
             return ResponseFormatter::responseSuccessWithData('Berhasil mendapatkan data tanah induk', $parent);
-
-        }else{
+        } else {
             $parent = Parents::where(
-                'auhtor',  Auth::user()->roles()->pluck('id')
+                'auhtor',
+                Auth::user()->roles()->pluck('id')
             )->where(
-                "upt", $upt
+                "upt",
+                $upt
             )->where(function ($query) use ($columns, $keyword) {
                 foreach ($columns as $column) {
                     $query->orWhere($column, 'like', "%{$keyword}%");
@@ -129,7 +131,6 @@ class ParentController extends Controller
 
             return ResponseFormatter::responseSuccessWithData('Berhasil mendapatkan data tanah induk', $parent);
         }
-
     }
 
     /**
@@ -256,6 +257,7 @@ class ParentController extends Controller
             'large' => 'required',
             'asset_value' => 'required',
             'upt' => 'required',
+            // 'coordinate' => 'required'
         ]);
 
         if ($validation->fails()) :
@@ -272,6 +274,9 @@ class ParentController extends Controller
                 'item_name' => $request->item_name,
                 'address' => $request->address,
                 'large' => $request->large,
+                // 'coordinate' => $request->coordinate,
+                'latitude' => $request->latitude,
+                'longitude' => $request->longitude,
                 'asset_value' => $request->asset_value,
                 'upt' => $request->upt,
             ]);
@@ -380,6 +385,8 @@ class ParentController extends Controller
                 'certificate_date' => $request->certificate_date,
                 'item_name' => $request->item_name,
                 'address' => $request->address,
+                'latitude' => $request->latitude,
+                'longitude' => $request->longitude,
                 'large' => $request->large,
                 'asset_value' => $request->asset_value,
             ]);

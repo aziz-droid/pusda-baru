@@ -218,7 +218,7 @@ class PaymentController extends Controller
             $parent->update([
                 'childrens_id' => $request->childrens_id,
                 'year' => $request->year,
-                'proof_of_payment' => $file,
+                'proof_of_payment' => isset($file) ? $file : $parent->proof_of_payment,
                 'payment_amount' => $request->payment_amount,
             ]);
             $parent->save();

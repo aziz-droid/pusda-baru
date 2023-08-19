@@ -15,6 +15,9 @@ class Parents extends Model
         'certificate_date',
         'item_name',
         'address',
+        'coordinate',
+        'latitude',
+        'longitude',
         'large',
         'asset_value',
         'upt'
@@ -26,14 +29,11 @@ class Parents extends Model
     }
     public function anak()
     {
-        return $this->belongsTo(Childer::class, 'id','parent_id');
+        return $this->belongsTo(Childer::class, 'id', 'parent_id');
     }
 
-    public function childers ()
+    public function childers()
     {
-        return $this->hasMany(Childer::class, 'id','parent_id');
+        return $this->hasMany(Childer::class, 'id', 'parent_id');
     }
-
-
-
-    }
+}

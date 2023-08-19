@@ -14,14 +14,14 @@ export const SideMenuAdmin  = ({
   const handleShow = () => setShow(!onHandle);
 
   useEffect(() => {
-    console.log({onHandle});
-    console.log({show});
+    // console.log({onHandle});
+    // console.log({show});
     // handleShow()
   })
     return (
       // <Offcanvas show={show} onHide={handleClose} backdrop>
 
-      <div className="side-menu h-auto ">
+      <div className="  side-menu h-100 " id="sticky-sidebar">
       {/* <Offcanvas.Header closeButton >
           <Offcanvas.Title> */}
           <Link

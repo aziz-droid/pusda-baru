@@ -1,9 +1,16 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import LayoutAdmin from "../../../components/Layout/layoutAdmin";
+import { MapContainer, Marker, Popup, TileLayer, useMap,Circle  } from 'react-leaflet'
+import {Icon} from 'leaflet'
+import markerIconPng from "leaflet/dist/images/marker-icon.png"
 
 import Swal from "sweetalert2";
 
+const center = {
+  lng: 112.73635667066236,
+  lat: -7.246854784171441,
+};
 export const EditIndukAdmin = () => {
   const apiUrl = process.env.REACT_APP_API_URL;
 
@@ -12,10 +19,15 @@ export const EditIndukAdmin = () => {
 
   const [induk, setInduk] = useState({});
   const [message, setMessage] = useState([]);
+  const [position, setPosition] = useState(center);
+  const [latitude, setLatitude] = useState("");
+  const [longitude, setLongitude] = useState("");
+  const [itemName, setItemName] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+   
     try {
       let token = localStorage.getItem("token");
 
@@ -83,8 +95,18 @@ export const EditIndukAdmin = () => {
           return console.log(resJson.message);
         }
 
-        let resData = resJson.data;
-        setInduk(resData);
+        
+        let resData = resJson?.data;
+        setItemName(resJson.data.item_name)
+        setInduk(resJson?.data);
+        let center = {
+          lng: resData.longitude,
+              lat: resData.latitude
+      }
+      // const center = {
+      //     lng: resData?.longitude,
+      //     lat: resData?.latitude
+      setPosition(center)
       } catch (error) {
         console.log(error);
       }
@@ -92,7 +114,36 @@ export const EditIndukAdmin = () => {
 
     fetchInduk().catch(console.error);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  const markerRef = useRef(null);
 
+
+  const eventHandlers = useMemo(
+    () => ({
+      dragend() {
+        const marker = markerRef.current;
+        if (marker != null) {
+          setPosition(marker.getLatLng());
+          
+          setLatitude(marker.getLatLng().lat);
+          setLongitude(marker.getLatLng().lng);
+
+          setInduk({
+            ...induk,
+            latitude: marker.getLatLng().lat,
+            longitude: marker.getLatLng().lng,
+          })
+          
+        }
+      },
+    }),
+    [latitude, longitude, induk]
+  );
+
+  function ChangeView({ center, zoom }) {
+    const map = useMap();
+    map.setView(center, zoom);
+    return null;
+  }
   return (
     <LayoutAdmin>
       <div
@@ -156,10 +207,13 @@ export const EditIndukAdmin = () => {
               name="nama-jenis-barang"
               value={induk.item_name}
               onChange={(e) =>
+                {
+                console.log(e.target.value)
                 setInduk({
                   ...induk,
-                  item_name: e.target.value,
+                  item_name: e.target.value 
                 })
+              }
               }
             />
           </div>
@@ -242,6 +296,55 @@ export const EditIndukAdmin = () => {
               }
             />
           </div>
+          <div>
+            <MapContainer center={center} zoom={13} scrollWheelZoom={false}>
+            <ChangeView center={position} zoom={18} /> 
+
+                        <TileLayer
+              attribution="&copy; OpenStreetMap"
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+  <Marker  draggable
+              eventHandlers={eventHandlers}
+              position={position}
+              ref={markerRef} icon={new Icon({iconUrl: markerIconPng, iconSize: [25, 41], iconAnchor: [12, 41]})}>
+         <Circle center={position} radius={induk.large ? induk.large : 0 } icon={new Icon({iconUrl: markerIconPng, iconSize: [25, 41], iconAnchor: [12, 41]})}/>
+
+  </Marker>
+</MapContainer>
+            </div>
+                        <div>
+                            <label htmlFor="latitude">Latitude (LS BT)</label>
+                            <input
+                            disabled
+                                type="text"
+                                className="w-100"
+                                name="latitude"
+                                value={induk.latitude}
+                                onChange={(e) =>
+                                    setInduk({
+                                        ...induk,
+                                        latitude: e.target.value,
+                                    })
+                                }
+                            />
+                        </div>
+                        <div>
+                            <label htmlFor="longitude">longitude (LS BT)</label>
+                            <input
+                            disabled
+                                type="text"
+                                className="w-100"
+                                name="longitude"
+                                value={induk.longitude}
+                                onChange={(e) =>
+                                    setInduk({
+                                        ...induk,
+                                        longitude: e.target.value,
+                                    })
+                                }
+                            />
+                        </div>
           {/* <div>
                         <label htmlFor="sertifikat-nilai">Nilai Aset</label>
                         <input

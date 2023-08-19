@@ -1,14 +1,30 @@
-import { useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import LayoutAdmin from "../../../components/Layout/layoutAdmin";
+import { MapContainer, Marker, Popup, TileLayer, useMap, Circle  } from 'react-leaflet'
+// import { MapContainer, TileLayer, FeatureGroup } from "react-leaflet";
+import {Icon, latLng} from 'leaflet'
+
+import markerIconPng from "leaflet/dist/images/marker-icon.png"
+import "leaflet-draw/dist/leaflet.draw.css";
+// import osm from "./osm-providers";
+import { EditControl } from "react-leaflet-draw";
+
 
 import Swal from "sweetalert2";
-
+const center = {
+    lng: 112.73635667066236,
+    lat: -7.246854784171441,
+  };
 export const TambahIndukAdmin = () => {
     const apiUrl = process.env.REACT_APP_API_URL;
 
     const navigate = useNavigate();
     const params = useParams();
+    const [mapLayers, setMapLayers] = useState();
+
+    const ZOOM_LEVEL = 12;
+    const mapRef = useRef();
 
     const [induk, setInduk] = useState({
         auhtor: localStorage.getItem('active_author_id'),
@@ -16,6 +32,8 @@ export const TambahIndukAdmin = () => {
         certificate_date: "",
         address: "",
         large: "",
+        latitude:"",
+        longitude:"",
         asset_value: "",
         item_name: "",
         upt: params.id
@@ -24,8 +42,13 @@ export const TambahIndukAdmin = () => {
     const [message, setMessage] = useState([]);
 
     const handleSubmit = async (e) => {
+        // setInduk({
+        //     ...induk,
+        //     coordinate: mapLayers !== undefined ? JSON.stringify(mapLayers, 0, 2) : "",
+        // })
         e.preventDefault();
 
+        console.log({induk})
         try {
             let token = localStorage.getItem("token");
 
@@ -75,6 +98,33 @@ export const TambahIndukAdmin = () => {
         }
     };
 
+    const markerRef = useRef(null);
+
+    const [position, setPosition] = useState(center);
+    const [latitude, setLatitude] = useState("");
+    const [longitude, setLongitude] = useState("");
+  
+    const eventHandlers = useMemo(
+      () => ({
+        dragend() {
+          const marker = markerRef.current;
+          if (marker != null) {
+            setPosition(marker.getLatLng());
+            
+            setLatitude(marker.getLatLng().lat);
+            setLongitude(marker.getLatLng().lng);
+  
+            setInduk({
+              ...induk,
+              latitude: marker.getLatLng().lat,
+              longitude: marker.getLatLng().lng,
+            })
+            
+          }
+        },
+      }),
+      [latitude, longitude, induk]
+    );
     return (
         <LayoutAdmin>
             <div
@@ -237,6 +287,82 @@ export const TambahIndukAdmin = () => {
                             }
                         ></textarea>
                     </div>
+                    {/* <div>
+                    <MapContainer center={center} zoom={ZOOM_LEVEL} ref={mapRef}>
+              <FeatureGroup>
+                <EditControl
+                  position="topright"
+                  onCreated={_onCreate}
+                //   onEdited={false}
+                  onDeleted={_onDeleted}
+                  draw={{
+                    rectangle: false,
+                    polyline: false,
+                    circle: false,
+                    circlemarker: false,
+                    marker: false,
+                  }}
+                />
+              </FeatureGroup>
+
+              <TileLayer
+              attribution="&copy; OpenStreetMap"
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+            </MapContainer>
+           
+                    </div> */}
+                <div>
+            <MapContainer center={center} zoom={13} scrollWheelZoom={false}>
+                        <TileLayer
+              attribution="&copy; OpenStreetMap"
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+  <Marker  draggable
+              eventHandlers={eventHandlers}
+              position={position}
+              ref={markerRef} icon={new Icon({iconUrl: markerIconPng, iconSize: [25, 41], iconAnchor: [12, 41]})}>
+     <Circle center={[latitude, longitude]} radius={induk.large ? induk.large : 0 } icon={new Icon({iconUrl: markerIconPng, iconSize: [25, 41], iconAnchor: [12, 41]})}>
+   
+  </Circle>
+  </Marker>
+</MapContainer>
+            </div>
+          <div>
+              <label htmlFor="latitude">Latitude</label>
+              <input
+              disabled
+
+                type="number"
+                className="w-100"
+                name="latitude"
+                placeholder="Masukkan latitude"
+                value={latitude}
+                // onChange={(e) =>
+                //   setChildren({
+                //     ...children,
+                //     latitude: latitude,
+                //   })
+                // }
+              />
+            </div>
+            <div>
+              <label htmlFor="longitude">Longitude</label>
+              <input
+              disabled
+                type="number"
+                className="w-100"
+                name="longitude"
+                placeholder="Masukkan longitude"
+                value={longitude}
+                // onChange={(e) =>
+                //   setChildren({
+                //     ...children,
+                //     longitude: longitude,
+                //   })
+                // }
+              />
+            </div>
                     {/* <div>
                         <label htmlFor="sertifikat-nilai">Nilai Aset</label>
                         <input

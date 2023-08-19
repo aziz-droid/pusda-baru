@@ -48,7 +48,7 @@ export const DeleteConfirmation = ({
             handleClose();
 
             if (urlRedirect !== null) {
-                navigate(urlRedirect);
+                window.location.replace(urlRedirect);
             }
         } catch (error) {
             console.log(error);

@@ -9,7 +9,7 @@ use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\Importable;
 
-class SecondSheetImporter implements ToModel,WithHeadingRow
+class SecondSheetImporter implements ToModel, WithHeadingRow
 {
     use Importable;
 
@@ -21,10 +21,10 @@ class SecondSheetImporter implements ToModel,WithHeadingRow
     }
 
     /**
-    * @param array $row
-    *
-    * @return \Illuminate\Database\Eloquent\Model|null
-    */
+     * @param array $row
+     *
+     * @return \Illuminate\Database\Eloquent\Model|null
+     */
     public function model(array $row)
     {
         if (!isset($row['sewa_retribusi'])) {
@@ -52,8 +52,8 @@ class SecondSheetImporter implements ToModel,WithHeadingRow
             'year' => $row['tahun'],
             'payment_amount' => $row['jumlah_pembayaran'],
             'proof_of_payment' => 'null',
-            'application_letter'=> 'null',
-            'agreement_letter'=> 'null'
+            'application_letter' => 'null',
+            'agreement_letter' => 'null'
         ]);
     }
 }

@@ -8,17 +8,28 @@ export default function LayoutAdmin({ children, ...rest }) {
   const [show, setShow] = useState(true);
   const handleShow = () => setShow(true);
   return (
-    <div className="d-flex">
-       <Collapse in={show} dimension="width">
-          <div id="example-collapse-text" >
+    <div className="container-fluid">
+
+     <div className="row py-3">
+     <Collapse in={show} dimension="width">
+
+        <div className="col-3" id="sticky-sidebar">
+            <div className="sticky-top">
+          <div id="example-collapse-text " className="">
       <SideMenuAdmin />
       </div>
+      
+        </div>
+        
+        </div>
         </Collapse>
-      <div className="w-100 h-100">
-      <Navbar />
 
+      <div className="w-100 h-100 col container" id="main">
+        <div className=" ">
+      <Navbar />
+      </div>
      
-        <main className="bg-light-gray h-100 border">
+        <main className="bg-light-gray h-100 border ">
        
 <Button
 onClick={() => setShow(!show)}
@@ -30,6 +41,7 @@ className="position-absolute  top-50 translate-middle mx-2 bg-cyanblue "
 </Button>
           {children}
         </main>
+      </div>
       </div>
     </div>
   );

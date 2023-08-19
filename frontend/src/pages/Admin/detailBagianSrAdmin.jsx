@@ -7,7 +7,15 @@ import { ButtonDelete } from "../../components/Button/ButtonDelete";
 import { TablePembayaran } from "../../components/Table/TablePembayaran";
 import ReactPaginate from "react-paginate";
 import Swal from "sweetalert2";
+import { MapContainer, Marker, Popup, TileLayer, useMap  } from 'react-leaflet'
+import {Icon, latLng} from 'leaflet'
 
+import markerIconPng from "leaflet/dist/images/marker-icon.png"
+
+const center = {
+    lng: 112.73635667066236,
+    lat: -7.246854784171441,
+  };
 export const DetailBagianSrAdmin = () => {
     const backendUrl = process.env.REACT_APP_BACKEND_URL;
     const apiUrl = process.env.REACT_APP_API_URL;
@@ -56,10 +64,14 @@ export const DetailBagianSrAdmin = () => {
     const [startingPoint, setStartingPoint] = useState(0);
     const [emptyMsg, setEmptyMsg] = useState("");
     const [paymentEdit, setPaymentEdit] = useState({});
+    const [centers, setCenters] = useState(center)
+    const [latitude, setLatitude] = useState("");
+    const [longitude, setLongitude] = useState("");
 
     const [triggerDeleted, setTriggerDeleted] = useState(false);
 
     useEffect(() => {
+        console.log("param", params)
         let token = localStorage.getItem("token");
 
         const fetchChildren = async () => {
@@ -84,6 +96,15 @@ export const DetailBagianSrAdmin = () => {
                 let resData = resJson.data;
 
                 setChildren(resData);
+                setLatitude(resData?.latitude);
+                setLongitude(resData?.longitude);
+        
+               let center = {
+                    lng: resData.longitude,
+                        lat: resData.latitude
+                }
+               
+                setCenters(center)
             } catch (error) {
                 console.log(error);
             }
@@ -135,6 +156,11 @@ export const DetailBagianSrAdmin = () => {
         fetchPayment().catch(console.error);
     }, [triggerDeleted, pageNum]);
 
+    function ChangeView({ center, zoom }) {
+        const map = useMap();
+        map.setView(center, zoom);
+        return null;
+      }
     return (
         <LayoutAdmin>
             <ModalPembayaran
@@ -203,10 +229,10 @@ export const DetailBagianSrAdmin = () => {
                     Informasi Tanah Bagian
                 </h5>
                 <div className="d-flex informasi-tanah-bagian gap-5 justify-content-between">
-                    <div className="left-form d-flex flex-col gap-3 ">
+                    <div className="left-form d-flex flex-col gap-3 w-100 ">
                         <div>
                             <label htmlFor="nilai-sewa">
-                                Jenis Perikatan Pemanfaatan
+                                Jenis Perikatan Pemanfaatans
                             </label>
                             <h5>
                                 {mapType(children.utilization_engagement_type)}
@@ -223,9 +249,32 @@ export const DetailBagianSrAdmin = () => {
                             <h5>{children.allotment_of_use}</h5>
                         </div>
                         <div>
-                            <label htmlFor="koordinat">Koordinat (LS BT)</label>
-                            <h5>{children.coordinate}</h5>
+                            <label htmlFor="koordinat">Latitude (LS BT)</label>
+                            <h5>{children.latitude}</h5>
                         </div>
+                        <div>
+                            <label htmlFor="koordinat">Longitude (LS BT)</label>
+                            <h5>{children.longitude}</h5>
+                        </div>
+                        <div>
+                        <MapContainer center={[-7.246854784171441,112.73635667066236]}  zoom={13} scrollWheelZoom={false}>
+                        <ChangeView center={centers} zoom={12} /> 
+
+                        <TileLayer
+              attribution="&copy; OpenStreetMap"
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+  <Marker position={[latitude, longitude]} icon={new Icon({iconUrl: markerIconPng, iconSize: [25, 41], iconAnchor: [12, 41]})}>
+   
+  </Marker>
+</MapContainer>
+                        </div>
+                        
+                    </div>
+                    <div
+                        className="right-form d-flex flex-col gap-3 w-100"
+                        style={{ paddingRight: "100px" }}
+                    >
                         <div>
                             <label htmlFor="luas-bagian">Luas Induk (m)</label>
                             <h5>{children.large}</h5>
@@ -238,11 +287,6 @@ export const DetailBagianSrAdmin = () => {
                                 {formatter.format(children.rental_retribution)}
                             </h5>
                         </div>
-                    </div>
-                    <div
-                        className="right-form d-flex flex-col gap-3"
-                        style={{ paddingRight: "100px" }}
-                    >
                         <div>
                             <label htmlFor="nomor-perikatan">
                                 Masa Berlaku
@@ -330,6 +374,7 @@ export const DetailBagianSrAdmin = () => {
                                         triggerDeleted={triggerDeleted}
                                         setTriggerDeleted={setTriggerDeleted}
                                         setShowEdit={setShowEdit}
+                                        urlRedirect={window.location.href}
                                         setPaymentEdit={setPaymentEdit}
                                     />
                                 );

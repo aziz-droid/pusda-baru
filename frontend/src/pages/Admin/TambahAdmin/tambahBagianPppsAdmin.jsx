@@ -1,9 +1,18 @@
-import { useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import LayoutAdmin from "../../../components/Layout/layoutAdmin";
+import { MapContainer, Marker, Popup, TileLayer, useMap,  } from 'react-leaflet'
+import {Icon} from 'leaflet'
+import markerIconPng from "leaflet/dist/images/marker-icon.png"
+
 
 import Swal from "sweetalert2";
 
+
+const center = {
+  lng: 112.73635667066236,
+  lat: -7.246854784171441,
+};
 export const TambahBagianPppsAdmin = () => {
   const apiUrl = process.env.REACT_APP_API_URL;
 
@@ -17,6 +26,8 @@ export const TambahBagianPppsAdmin = () => {
     large: "",
     present_condition: "",
     coordinate: "",
+    latitude:"",
+    longitude:"",
     description: "",
   });
 
@@ -74,6 +85,35 @@ export const TambahBagianPppsAdmin = () => {
     }
   };
 
+  const markerRef = useRef(null);
+
+  const [position, setPosition] = useState(center);
+  const [latitude, setLatitude] = useState("");
+  const [longitude, setLongitude] = useState("");
+
+  const eventHandlers = useMemo(
+    () => ({
+      dragend() {
+        const marker = markerRef.current;
+        if (marker != null) {
+          setPosition(marker.getLatLng());
+          
+          setLatitude(marker.getLatLng().lat);
+          setLongitude(marker.getLatLng().lng);
+
+          setChildren({
+            ...children,
+            latitude: marker.getLatLng().lat,
+            longitude: marker.getLatLng().lng,
+          })
+          
+        }
+      },
+    }),
+    [latitude, longitude, children]
+  );
+
+  console.log(latitude, longitude);
   return (
     <LayoutAdmin>
       <div
@@ -128,8 +168,8 @@ export const TambahBagianPppsAdmin = () => {
           })}
         </div> */}
 
-        <form className="d-flex form-tambah-tanah gap-5">
-          <div className="left-form d-flex flex-col gap-3">
+        <form className="d-flex form-tambah-tanah gap-5 mb-4 ">
+          <div className="left-form d-flex flex-col gap-3 w-100">
             <div>
               <label htmlFor="sertifikat-jenispemanfaatan">
                 Penggunaan/Pemanfaatan
@@ -201,24 +241,6 @@ export const TambahBagianPppsAdmin = () => {
                 }
               />
             </div>
-          </div>
-          <div className="right-form d-flex flex-col gap-3">
-            <div>
-              <label htmlFor="koordinat">Koordinat (LS BT)</label>
-              <input
-                type="text"
-                className="w-100"
-                name="koordinat"
-                placeholder="Masukkan koordinat"
-                value={children.coordinate}
-                onChange={(e) =>
-                  setChildren({
-                    ...children,
-                    coordinate: e.target.value,
-                  })
-                }
-              />
-            </div>
             <div>
               <label htmlFor="keterangan">Keterangan</label>
               <textarea
@@ -234,6 +256,58 @@ export const TambahBagianPppsAdmin = () => {
                 }
               ></textarea>
             </div>
+          </div>
+          <div className="right-form d-flex flex-col gap-3 w-100">
+            <div>
+            <MapContainer center={center} zoom={13} scrollWheelZoom={false}>
+                        <TileLayer
+              attribution="&copy; OpenStreetMap"
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+  <Marker  draggable
+              eventHandlers={eventHandlers}
+              position={position}
+              ref={markerRef} icon={new Icon({iconUrl: markerIconPng, iconSize: [25, 41], iconAnchor: [12, 41]})}>
+   
+  </Marker>
+</MapContainer>
+            </div>
+          <div>
+              <label htmlFor="latitude">Latitude</label>
+              <input
+              disabled
+
+                type="number"
+                className="w-100"
+                name="latitude"
+                placeholder="Masukkan latitude"
+                value={latitude}
+                // onChange={(e) =>
+                //   setChildren({
+                //     ...children,
+                //     latitude: latitude,
+                //   })
+                // }
+              />
+            </div>
+            <div>
+              <label htmlFor="longitude">Longitude</label>
+              <input
+              disabled
+                type="number"
+                className="w-100"
+                name="longitude"
+                placeholder="Masukkan longitude"
+                value={longitude}
+                // onChange={(e) =>
+                //   setChildren({
+                //     ...children,
+                //     longitude: longitude,
+                //   })
+                // }
+              />
+            </div>
+           
           </div>
         </form>
       </div>

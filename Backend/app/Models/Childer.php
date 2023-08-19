@@ -16,6 +16,8 @@ class Childer extends Model
         'utilization_engagement_name',
         'allotment_of_use',
         'coordinate',
+        'latitude',
+        'longitude',
         'large',
         'present_condition',
         'validity_period_of',
@@ -29,14 +31,11 @@ class Childer extends Model
 
     public function parent()
     {
-        return $this->belongsTo(Parents::class,'parent_id','id');
+        return $this->belongsTo(Parents::class, 'parent_id', 'id');
     }
 
-    public function payments ()
+    public function payments()
     {
-        return $this->hasMany(Payment::class,'childrens_id');
+        return $this->hasMany(Payment::class, 'childrens_id');
     }
-
-
-
 }

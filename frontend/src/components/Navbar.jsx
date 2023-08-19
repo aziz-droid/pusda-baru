@@ -72,7 +72,7 @@ export const Navbar = () => {
   }, [id]);
 
   return (
-    <div className="navbar w-100 d-flex ">
+    <div className="navbar ">
       <div>
         <p className="m-0">DATA ASET</p>
         <h2 className="font-semibold">{pageTitle}</h2>
