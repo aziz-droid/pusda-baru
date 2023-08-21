@@ -14,6 +14,7 @@ use App\Imports\ChildernImport;
 use App\Imports\IndukImport;
 use App\Imports\SecondSheetImporter;
 use App\Imports\MultiSheetSelector;
+use App\Imports\PembayaranImport;
 use Exception;
 use Illuminate\Support\Facades\Validator;
 
@@ -92,6 +93,24 @@ class ImportExportData extends Controller
 
         try {
             Excel::import(new AnakImport($id), request()->file('file'));
+            return ResponseFormatter::responseSuccessWithData('Data Berhasil di Import');
+        } catch (Exception $error) {
+            return ResponseFormatter::responseError($error->getMessage(), 400);
+        }
+    }
+
+    public function import_payment(Request $request, $id)
+    {
+        $validation = Validator::make($request->only('file'), [
+            'file' => 'required|mimes:csv,xlx,xls,xlsx'
+        ]);
+
+        if ($validation->fails()) :
+            return ResponseFormatter::responseValidation($validation->errors());
+        endif;
+
+        try {
+            Excel::import(new PembayaranImport($id), request()->file('file'));
             return ResponseFormatter::responseSuccessWithData('Data Berhasil di Import');
         } catch (Exception $error) {
             return ResponseFormatter::responseError($error->getMessage(), 400);

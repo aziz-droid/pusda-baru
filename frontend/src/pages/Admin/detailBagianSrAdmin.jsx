@@ -156,6 +156,59 @@ export const DetailBagianSrAdmin = () => {
         fetchPayment().catch(console.error);
     }, [triggerDeleted, pageNum]);
 
+    const importDetailPaymentAdmin = () => {
+        Swal.fire({
+            title: "Import Data",
+            text: "Upload file excel",
+            input: "file",
+            inputAttributes: {
+                accept: ".xls,.xlsx,.csv, .xlx",
+                "aria-label": "Upload your file",
+                name: "file",
+            },
+            showCancelButton: true,
+            confirmButtonText: "Upload",
+            showLoaderOnConfirm: true,
+            preConfirm: (file) => {
+                let token = localStorage.getItem("token");
+                let formData = new FormData();
+                formData.append("file", file);
+                formData.append("token", token);
+                console.log({formData})
+                console.log("id", children.id)
+                return fetch(apiUrl + "import/file/payment/" + children.id, {
+                    method: "POST",
+                    body: formData,
+                }).then((response) => {
+                    if (!response.ok) {
+                        throw new Error(response.statusText);
+                    }
+                    return response.json();
+                }).catch((error) => {
+                    Swal.showValidationMessage(`Request failed: ${error}`);
+                });
+            },
+            allowOutsideClick: () => !Swal.isLoading(),
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire({
+                    title: "Success!",
+                    text: "Data berhasil diimport",
+                    icon: "success",
+                });
+
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000);
+            } else {
+                Swal.fire({
+                    title: "Error!",
+                    text: "Data gagal diimport",
+                    icon: "error",
+                });
+            }
+        });
+    };
     function ChangeView({ center, zoom }) {
         const map = useMap();
         map.setView(center, zoom);
@@ -353,6 +406,13 @@ export const DetailBagianSrAdmin = () => {
                     >
                         <h5>Informasi Pembayaran</h5>
                         <div className="d-flex">
+                        <div
+                                onClick={importDetailPaymentAdmin}
+                                className="secondary-btn d-flex align-items-center me-2"
+                                style={{ padding: "0 15px" }}
+                            >
+                                Import
+                            </div>
                             <div
                                 to="/upt/tambah"
                                 className="primary-btn d-flex justify-content-center align-items-center"

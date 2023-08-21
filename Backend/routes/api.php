@@ -68,6 +68,8 @@ Route::group(['middleware' => ['jwt.verify']], function () {
     Route::post('/import/file/{upt}/parent/{author}', [ImportExportData::class, 'import_parent']);
     //  Import File parent
     Route::post('/import/file/children/{id}', [ImportExportData::class, 'import_children']);
+    //  Import File payments
+    Route::post('/import/file/payment/{id}', [ImportExportData::class, 'import_payment']);
 
     // parent
     Route::group(['prefix' => 'parent'], function () {
