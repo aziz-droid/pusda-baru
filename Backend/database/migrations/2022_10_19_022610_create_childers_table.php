@@ -17,10 +17,12 @@ class CreateChildersTable extends Migration
             $table->id();
             $table->bigInteger('parent_id')->unsigned();
             $table->string('rental_retribution')->nullable();
-            $table->enum('utilization_engagement_type',['pinjam_pakai','pakai_sendiri','sewa_sip_bmd','retribusi']);
+            $table->enum('utilization_engagement_type', ['pinjam_pakai', 'pakai_sendiri', 'sewa_sip_bmd', 'retribusi']);
             $table->string('utilization_engagement_name')->nullable();
             $table->string('allotment_of_use');
             $table->string('coordinate');
+            $table->string('latitude');
+            $table->string('longitude');
             $table->string('large');
             $table->string('present_condition')->nullable();
             $table->date('validity_period_of')->nullable();

@@ -21,6 +21,8 @@ class CreateParentsTable extends Migration
             $table->string('item_name');
             $table->string('address');
             $table->string('large');
+            $table->string('latitude');
+            $table->string('longitude');
             $table->integer('asset_value');
             $table->string('upt');
             $table->timestamps();
