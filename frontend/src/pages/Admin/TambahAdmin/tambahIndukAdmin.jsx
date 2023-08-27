@@ -9,7 +9,6 @@ import {Icon, latLng} from 'leaflet'
 import markerIconPng from "leaflet/dist/images/marker-icon.png"
 import "leaflet-draw/dist/leaflet.draw.css";
 // import osm from "./osm-providers";
-import { EditControl } from "react-leaflet-draw";
 
 
 import Swal from "sweetalert2";
@@ -29,13 +28,13 @@ import Swal from "sweetalert2";
         const navigate = useNavigate();
         // Mendapatkan parameter dari URL
         const params = useParams();
-        // Mendefinisikan state untuk layer peta
-        const [mapLayers, setMapLayers] = useState();
+        // // Mendefinisikan state untuk layer peta
+        // const [mapLayers, setMapLayers] = useState();
 
-        // Mendefinisikan level zoom untuk peta
-        const ZOOM_LEVEL = 12;
-        // Mendefinisikan ref untuk peta
-        const mapRef = useRef();
+        // // Mendefinisikan level zoom untuk peta
+        // const ZOOM_LEVEL = 12;
+        // // Mendefinisikan ref untuk peta
+        // const mapRef = useRef();
 
         // Mendefinisikan state untuk data induk
         const [induk, setInduk] = useState({
@@ -51,8 +50,7 @@ import Swal from "sweetalert2";
             upt: params.id
         });
 
-        // Mendefinisikan state untuk pesan error
-        const [message, setMessage] = useState([]);
+        
 
         // Fungsi untuk menangani submit form
         const handleSubmit = async (e) => {
@@ -81,7 +79,7 @@ import Swal from "sweetalert2";
                 let resJson = await res.json();
 
                 // Jika status response bukan 201, menampilkan pesan error
-                if (res.status != 201) {
+                if (res.status !== 201) {
                     let message = resJson.message;
                     if (!Array.isArray(message)) message = [resJson.message];
 

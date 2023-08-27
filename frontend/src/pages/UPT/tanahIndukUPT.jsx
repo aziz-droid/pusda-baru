@@ -50,6 +50,7 @@ export const TanahIndukUPT = () => {
         luas: "",
     });
 
+  // Mengambil data UPT dari API saat komponen pertama kali dimuat
     useEffect(() => {
         const fetchData = async () => {
             let token = localStorage.getItem("token");

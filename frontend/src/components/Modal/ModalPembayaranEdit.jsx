@@ -16,6 +16,7 @@ export const ModalPembayaranEdit = ({
 
   const [message, setMessage] = useState([]);
 
+  // fungsi handlesubmit yang berfungsi untuk mengirim data dari form lalu dikirim ke url API edit informasi pembayaran
   const handleSubmit = async (e) => {
     e.preventDefault();
 
