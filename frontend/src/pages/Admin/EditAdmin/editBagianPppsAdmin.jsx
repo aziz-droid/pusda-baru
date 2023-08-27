@@ -9,12 +9,13 @@ import markerIconPng from "leaflet/dist/images/marker-icon.png"
 import Swal from "sweetalert2";
 
 
-const center = {
+const center = {    
     lng: 112.73635667066236,
     lat: -7.246854784171441,
   };
-
+  
 export const EditBagianPppsAdmin = () => {
+
     const apiUrl = process.env.REACT_APP_API_URL;
 
     const navigate = useNavigate();
@@ -40,12 +41,13 @@ export const EditBagianPppsAdmin = () => {
 
     const [message, setMessage] = useState([]);
 
+    // fungsi handlesubmit yang berfungsi untuk mengirim data dari form yang di simpan ke state children lalu dikirim ke url API edit tanah bagian
     const handleSubmit = async (e) => {
         e.preventDefault();
 
         try {
             let token = localStorage.getItem("token");
-
+            // proses pengiriman data ke url API edit tanah bagian
             let res = await fetch(apiUrl + "childer/update/" + params.children_id, {
                 method: "POST",
                 body: JSON.stringify({
@@ -57,9 +59,10 @@ export const EditBagianPppsAdmin = () => {
                 },
             });
 
+            // respon setelah data dikirim
             let resJson = await res.json();
-
-            if (res.status != 200) {
+            // jika respon gagal menghasilkan eror
+            if (res.status !== 200) {
                 let message = resJson.message;
                 if (!Array.isArray(message)) message = [resJson.message];
 
@@ -78,7 +81,7 @@ export const EditBagianPppsAdmin = () => {
 
                 // return setMessage(message);
             }
-
+            // jika respon berhasil menghasilkan popup success
             Swal.fire({
                 icon: "success",
                 title: "Berhasil",
@@ -86,6 +89,7 @@ export const EditBagianPppsAdmin = () => {
                 timer: 1000,
             });
 
+            // fungsi navigate ketika data berhasil di update maka kembali ke halaman detail tanah bagian
             return navigate(
                 "/upt/" + params.id + "/admin/detail/" + params.induk_id
             );
@@ -94,6 +98,7 @@ export const EditBagianPppsAdmin = () => {
         }
     };
 
+    // Menggunakan useEffect untuk melakukan fetch data tanah bagian 
     useEffect(() => {
         let token = localStorage.getItem("token");
 

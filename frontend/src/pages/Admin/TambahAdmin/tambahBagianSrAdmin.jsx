@@ -1,3 +1,4 @@
+// Mengimpor modul yang diperlukan
 import {useState, useEffect, useRef, useMemo} from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import LayoutAdmin from "../../../components/Layout/layoutAdmin";
@@ -5,22 +6,26 @@ import { MapContainer, Marker, Popup, TileLayer, useMap,  } from 'react-leaflet'
 import {Icon} from 'leaflet'
 import markerIconPng from "leaflet/dist/images/marker-icon.png"
 
-
-
+// Mengimpor modul untuk menampilkan popup
 import Swal from "sweetalert2";
 
-
+// Mendefinisikan koordinat pusat peta
 const center = {
   lng: 112.73635667066236,
   lat: -7.246854784171441,
 };
 
+// Mendefinisikan komponen TambahBagianSrAdmin
 export const TambahBagianSrAdmin = () => {
+  // Mendapatkan URL API dari variabel lingkungan
   const apiUrl = process.env.REACT_APP_API_URL;
 
+  // Menggunakan hook dari react-router-dom untuk navigasi
   const navigate = useNavigate();
+  // Menggunakan hook dari react-router-dom untuk mendapatkan parameter URL
   const params = useParams();
 
+  // Mendefinisikan state untuk menyimpan data anak
   const [children, setChildren] = useState({
     parent_id: params.induk_id,
     rental_retribution: "",
@@ -40,28 +45,38 @@ export const TambahBagianSrAdmin = () => {
     agreement_letter: null,
   });
 
+  // Mendefinisikan state untuk menyimpan pesan error
   const [message, setMessage] = useState([]);
 
+  // Mendefinisikan fungsi untuk menangani submit form
   const handleSubmit = async (e) => {
+    // Mencegah perilaku default form
     e.preventDefault();
 
+    // Mencoba mengirim data ke server
     try {
+      // Mendapatkan token dari local storage
       let token = localStorage.getItem("token");
+      // Membuat objek FormData untuk mengirim data dalam bentuk multipart/form-data
       const formData = new FormData();
 
+      // Menambahkan setiap properti dari objek children ke formData
       for (const key in children) {
         formData.append(key, children[key]);
       }
+      // Menambahkan token ke formData
       formData.append("token", token);
 
-    //   console.log({children})
+      // Mengirim request ke server
       let res = await fetch(apiUrl + "childer/create", {
         method: "POST",
         body: formData,
       });
 
+      // Mengubah response menjadi JSON
       let resJson = await res.json();
 
+      // Jika status response bukan 201, menampilkan pesan error
       if (res.status != 201) {
         let message = resJson.message;
         if (!Array.isArray(message)) message = [resJson.message];
@@ -71,17 +86,18 @@ export const TambahBagianSrAdmin = () => {
           messageList += "<li>" + item + "</li>";
         });
 
+        // Menampilkan pesan error dengan SweetAlert2
         return Swal.fire({
           icon: "error",
           title: "Oops...",
           html: messageList,
-          // text: messageList,
-          // timer: 1000,
         });
 
+        // Mengubah state message
         // return setMessage(message);
       }
 
+      // Menampilkan pesan sukses dengan SweetAlert2
       Swal.fire({
         icon: "success",
         title: "Berhasil",
@@ -89,107 +105,178 @@ export const TambahBagianSrAdmin = () => {
         timer: 1000,
       });
 
+      // Mengarahkan user ke halaman detail
       return navigate("/upt/" + params.id + "/admin/detail/" + params.induk_id);
     } catch (error) {
+      // Menampilkan pesan error di console
       console.log(error);
     }
   };
 
-    const [file, setFile] = useState();
-    const uploadRef = useRef();
-    const statusRef = useRef();
-    const loadTotalRef = useRef();
-    const progressRef = useRef();
+  // Mendefinisikan state untuk menyimpan file
+  const [file, setFile] = useState();
+  // Mendefinisikan ref untuk input file
+  const uploadRef = useRef();
+  // Mendefinisikan ref untuk status upload
+  const statusRef = useRef();
+  // Mendefinisikan ref untuk total load
+  const loadTotalRef = useRef();
+  // Mendefinisikan ref untuk progress upload
+  const progressRef = useRef();
 
-    const UploadFile = () => {
-        const file = uploadRef.current.files[0];
-        setFile(URL.createObjectURL(file));
-        var formData = new FormData();
-        formData.append("image", file);
-        var xhr = new XMLHttpRequest();
-        xhr.upload.addEventListener("progress", ProgressHandler, false);
-        xhr.addEventListener("load", SuccessHandler, false);
-        xhr.addEventListener("error", ErrorHandler, false);
-        xhr.addEventListener("abort", AbortHandler, false);
-        xhr.open("POST", "fileupload.php");
-        xhr.send(formData);
-    };
+  // Mendefinisikan fungsi untuk mengupload file
+  const UploadFile = () => {
+    // Mendapatkan file dari input
+    const file = uploadRef.current.files[0];
+    // Mengubah state file
+    setFile(URL.createObjectURL(file));
+    // Membuat objek FormData
+    var formData = new FormData();
+    // Menambahkan file ke formData
+    formData.append("image", file);
+    // Membuat objek XMLHttpRequest
+    var xhr = new XMLHttpRequest();
+    // Menambahkan event listener untuk progress upload
+    xhr.upload.addEventListener("progress", ProgressHandler, false);
+    // Menambahkan event listener untuk load
+    xhr.addEventListener("load", SuccessHandler, false);
+    // Menambahkan event listener untuk error
+    xhr.addEventListener("error", ErrorHandler, false);
+    // Menambahkan event listener untuk abort
+    xhr.addEventListener("abort", AbortHandler, false);
+    // Membuka koneksi ke server
+    xhr.open("POST", "fileupload.php");
+    // Mengirim formData
+    xhr.send(formData);
+  };
 
-    const ProgressHandler = (e) => {
-        loadTotalRef.current.innerHTML = `${uploadRef.current.files[0].name} uploaded ${Math.round(e.loaded/1024)}K bytes of ${Math.round(e.total/1024)}K    bytes`;
-        var percent = (e.loaded / e.total) * 100;
-        progressRef.current.value = Math.round(percent);
-        statusRef.current.innerHTML = Math.round(percent) + "% uploaded...";
-    };
+  // Mendefinisikan fungsi untuk menangani progress upload
+  const ProgressHandler = (e) => {
+    // Menampilkan total load
+    loadTotalRef.current.innerHTML = `${uploadRef.current.files[0].name} uploaded ${Math.round(e.loaded/1024)}K bytes of ${Math.round(e.total/1024)}K    bytes`;
+    // Menghitung persentase upload
+    var percent = (e.loaded / e.total) * 100;
+    // Mengubah value progress bar
+    progressRef.current.value = Math.round(percent);
+    // Menampilkan persentase upload
+    statusRef.current.innerHTML = Math.round(percent) + "% uploaded...";
+  };
 
-    const SuccessHandler = (e) => {
-        statusRef.current.innerHTML = e.target.responseText;
-        progressRef.current.value = 0;
-    };
+  // Mendefinisikan fungsi untuk menangani load
+  const SuccessHandler = (e) => {
+    // Menampilkan response dari server
+    statusRef.current.innerHTML = e.target.responseText;
+    // Mengubah value progress bar menjadi 0
+    progressRef.current.value = 0;
+  };
 
-    const ErrorHandler = () => {
-        statusRef.current.innerHTML = "upload failed!!";
-    };
-    const AbortHandler = () => {
-        statusRef.current.innerHTML = "upload aborted!!";
-    };
+  // Mendefinisikan fungsi untuk menangani error
+  const ErrorHandler = () => {
+    // Menampilkan pesan error
+    statusRef.current.innerHTML = "upload failed!!";
+  };
+  // Mendefinisikan fungsi untuk menangani abort
+  const AbortHandler = () => {
+    // Menampilkan pesan abort
+    statusRef.current.innerHTML = "upload aborted!!";
+  };
 
-    /* 2222 */
-    const [file2, setFile2] = useState();
-    const uploadRef2 = useRef();
-    const statusRef2 = useRef();
-    const loadTotalRef2 = useRef();
-    const progressRef2 = useRef();
+  // Mendefinisikan state untuk menyimpan file kedua
+  const [file2, setFile2] = useState();
+  // Mendefinisikan ref untuk input file kedua
+  const uploadRef2 = useRef();
+  // Mendefinisikan ref untuk status upload kedua
+  const statusRef2 = useRef();
+  // Mendefinisikan ref untuk total load kedua
+  const loadTotalRef2 = useRef();
+  // Mendefinisikan ref untuk progress upload kedua
+  const progressRef2 = useRef();
 
-    const UploadFile2 = () => {
-        const file = uploadRef2.current.files[0];
-        setFile2(URL.createObjectURL(file));
-        var formData = new FormData();
-        formData.append("image", file2);
-        var xhr = new XMLHttpRequest();
-        xhr.upload.addEventListener("progress", ProgressHandler2, false);
-        xhr.addEventListener("load", SuccessHandler2, false);
-        xhr.addEventListener("error", ErrorHandler2, false);
-        xhr.addEventListener("abort", AbortHandler2, false);
-        xhr.open("POST", "fileupload.php");
-        xhr.send(formData);
-    };
+  // Mendefinisikan fungsi untuk mengupload file kedua
+  const UploadFile2 = () => {
+    // Mendapatkan file dari input
+    const file = uploadRef2.current.files[0];
+    // Mengubah state file
+    setFile2(URL.createObjectURL(file));
+    // Membuat objek FormData
+    var formData = new FormData();
+    // Menambahkan file ke formData
+    formData.append("image", file2);
+    // Membuat objek XMLHttpRequest
+    var xhr = new XMLHttpRequest();
+    // Menambahkan event listener untuk progress upload
+    xhr.upload.addEventListener("progress", ProgressHandler2, false);
+    // Menambahkan event listener untuk load
+    xhr.addEventListener("load", SuccessHandler2, false);
+    // Menambahkan event listener untuk error
+    xhr.addEventListener("error", ErrorHandler2, false);
+    // Menambahkan event listener untuk abort
+    xhr.addEventListener("abort", AbortHandler2, false);
+    // Membuka koneksi ke server
+    xhr.open("POST", "fileupload.php");
+    // Mengirim formData
+    xhr.send(formData);
+  };
 
-    const ProgressHandler2 = (e) => {
-        loadTotalRef2.current.innerHTML = `${uploadRef2.current.files[0].name} uploaded ${e.loaded} bytes of ${e.total} bytes`;
-        var percent = (e.loaded / e.total) * 100;
-        progressRef2.current.value = Math.round(percent);
-        statusRef2.current.innerHTML = Math.round(percent) + "% uploaded...";
-    };
+  // Mendefinisikan fungsi untuk menangani progress upload kedua
+  const ProgressHandler2 = (e) => {
+    // Menampilkan total load
+    loadTotalRef2.current.innerHTML = `${uploadRef2.current.files[0].name} uploaded ${e.loaded} bytes of ${e.total} bytes`;
+    // Menghitung persentase upload
+    var percent = (e.loaded / e.total) * 100;
+    // Mengubah value progress bar
+    progressRef2.current.value = Math.round(percent);
+    // Menampilkan persentase upload
+    statusRef2.current.innerHTML = Math.round(percent) + "% uploaded...";
+  };
 
-    const SuccessHandler2 = (e) => {
-        // statusRef2.current.innerHTML = e.target.responseText;
-        progressRef2.current.value = 0;
-    };
+  // Mendefinisikan fungsi untuk menangani load kedua
+  const SuccessHandler2 = (e) => {
+    // Menampilkan response dari server
+    // statusRef2.current.innerHTML = e.target.responseText;
+    // Mengubah value progress bar menjadi 0
+    progressRef2.current.value = 0;
+  };
 
-    const ErrorHandler2 = () => {
-        statusRef2.current.innerHTML = "upload failed!!";
-    };
-    const AbortHandler2 = () => {
-        statusRef2.current.innerHTML = "upload aborted!!";
-    };
+  // Mendefinisikan fungsi untuk menangani error kedua
+  const ErrorHandler2 = () => {
+    // Menampilkan pesan error
+    statusRef2.current.innerHTML = "upload failed!!";
+  };
+  // Mendefinisikan fungsi untuk menangani abort kedua
+  const AbortHandler2 = () => {
+    // Menampilkan pesan abort
+    statusRef2.current.innerHTML = "upload aborted!!";
+  };
 
-    const markerRef = useRef(null);
+  // Mendefinisikan ref untuk marker
+  const markerRef = useRef(null);
 
+  // Mendefinisikan state untuk posisi marker
   const [position, setPosition] = useState(center);
+  // Mendefinisikan state untuk latitude
   const [latitude, setLatitude] = useState("");
+  // Mendefinisikan state untuk longitude
   const [longitude, setLongitude] = useState("");
 
+  // Mendefinisikan event handler untuk marker
   const eventHandlers = useMemo(
     () => ({
+      // Fungsi untuk menangani event dragend
       dragend() {
+        // Mendapatkan marker
         const marker = markerRef.current;
+        // Jika marker ada
         if (marker != null) {
+          // Mengubah posisi marker
           setPosition(marker.getLatLng());
           
+          // Mengubah latitude
           setLatitude(marker.getLatLng().lat);
+          // Mengubah longitude
           setLongitude(marker.getLatLng().lng);
 
+          // Mengubah state children
           setChildren({
             ...children,
             latitude: marker.getLatLng().lat,
@@ -199,8 +286,12 @@ export const TambahBagianSrAdmin = () => {
         }
       },
     }),
+    // Dependensi useMemo
     [latitude, longitude, children]
   );
+  // Mengembalikan komponen
+ 
+
   return (
     <LayoutAdmin>
       <div

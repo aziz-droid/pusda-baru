@@ -13,6 +13,8 @@ export const DashboardAdmin = () => {
     style: "currency",
     currency: "IDR",
   });
+
+  // Pembuatan beberapa state / variable
   const [dataKeseluruhan, setDataKeseluruhan] = useState([]);
   const [dashboardData, setDashboardData] = useState([]);
   const [exportData, setExportData] = useState([]);
@@ -28,11 +30,15 @@ export const DashboardAdmin = () => {
   const [filterYear, setFilterYear] = useState(currentYear);
   const [emptyMsg, setEmptyMsg] = useState("");
 
+  // use effect pada react adalah function yang dieksekusi setelah render.
   useEffect(() => {
+
+    // function untuk mengambil data yang akan di tampilkan pada tabel UPT
     const fetchData = async () => {
       let token = localStorage.getItem("token");
 
       try {
+        // variabel res berisi fungsi await untuk memanggil endpoint api DashboardController dengan filter tahun
         let res = await fetch(apiUrl + "dashboard/all/" + filterYear, {
           method: "GET",
           headers: {
@@ -41,6 +47,8 @@ export const DashboardAdmin = () => {
           },
         });
 
+
+        // response di simpan ke beberapa variabel 
         let resJson = await res.json();
 
         if (res.status !== 200) {
@@ -49,8 +57,9 @@ export const DashboardAdmin = () => {
 
         let resData = resJson.data;
         let resDataKeseluruhan = resJson.keseluruhan;
-        console.log(resData);
-        console.log(resDataKeseluruhan);
+        // console.log(resData);
+        // console.log(resDataKeseluruhan);
+
         setDataKeseluruhan(resDataKeseluruhan);
 
         if (resData.length === 0) {
@@ -59,6 +68,7 @@ export const DashboardAdmin = () => {
 
         setEmptyMsg("");
 
+        // pembuatan variabel untuk menampung data total dari tiap kolom
         let totalTanahInduk = 0;
         let tanahPinjamPakai = 0;
         let tanahPakaiSendiri = 0;
@@ -67,7 +77,7 @@ export const DashboardAdmin = () => {
         let tanahRetribusi = 0;
         let rupiahTanahRetribusi = 0;
 
-        // Set dashboard total
+        // proses perhitungan total dari tiap kolom data
         resData.forEach((item, key) => {
           totalTanahInduk += item.total_tanah_induk;
           tanahPinjamPakai += item.total_tanah_pinjam_pakai;
@@ -78,6 +88,7 @@ export const DashboardAdmin = () => {
           rupiahTanahRetribusi += item.total_rupiah_tanah_retribusi;
         });
 
+        // lalu hasil perhitungan total dimasukkan pada State Total
         setTotal({
           total_tanah_induk: totalTanahInduk,
           total_tanah_pinjam_pakai: tanahPinjamPakai,
@@ -89,11 +100,14 @@ export const DashboardAdmin = () => {
         });
 
         setDashboardData(resData);
-      } catch (error) {
+      } 
+      // jika terjadi error, maka akan tampilkan pesan error melalui console
+      catch (error) {
         console.log(error);
       }
     };
 
+    // fungsi getExportData digunakan untuk mengambil data dari endpoint export/all/data/upt
     const getExportData = async () => {
       let token = localStorage.getItem("token");
 
@@ -145,7 +159,7 @@ export const DashboardAdmin = () => {
         </div>
       </div>
 
-      {/* table */}
+      {/* table yang berisi menampilkan data total tiap UPT */}
       <div className="dashboard-table mx-3 p-2 pb-0 border-cyanblue bg-white">
         <div className="d-flex justify-content-between py-2 px-2">
           <h5 className="font-semibold">Informasi Total Data UPT</h5>

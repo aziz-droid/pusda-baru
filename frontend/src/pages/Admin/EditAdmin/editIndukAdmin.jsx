@@ -7,27 +7,36 @@ import markerIconPng from "leaflet/dist/images/marker-icon.png"
 
 import Swal from "sweetalert2";
 
+
+// Mendefinisikan titik pusat peta
 const center = {
   lng: 112.73635667066236,
   lat: -7.246854784171441,
 };
+
+// Fungsi utama untuk mengedit data admin
 export const EditIndukAdmin = () => {
+  // Mendapatkan URL API dari environment variable
   const apiUrl = process.env.REACT_APP_API_URL;
 
+  // Mendapatkan parameter dari URL
   const params = useParams();
+  // Fungsi untuk navigasi antar halaman
   const navigate = useNavigate();
 
+  // Mendefinisikan state untuk data induk, pesan, posisi, latitude, longitude, dan nama item
   const [induk, setInduk] = useState({});
-  const [message, setMessage] = useState([]);
   const [position, setPosition] = useState(center);
   const [latitude, setLatitude] = useState("");
   const [longitude, setLongitude] = useState("");
   const [itemName, setItemName] = useState("");
 
+  // Fungsi untuk menangani submit form
   const handleSubmit = async (e) => {
+    // Mencegah halaman refresh saat submit form
     e.preventDefault();
 
-   
+    // Mengirim request ke API untuk update data
     try {
       let token = localStorage.getItem("token");
 
@@ -44,7 +53,8 @@ export const EditIndukAdmin = () => {
 
       let resJson = await res.json();
 
-      if (res.status != 200) {
+      // Menampilkan pesan error jika status response bukan 200
+      if (res.status !== 200) {
         let message = resJson.message;
         if (!Array.isArray(message)) message = [resJson.message];
 
@@ -57,12 +67,10 @@ export const EditIndukAdmin = () => {
           icon: "error",
           title: "Oops...",
           html: messageList,
-          // text: messageList,
-          // timer: 1000,
         });
 
-        // return setMessage(message);
       }
+      // Menampilkan pesan sukses jika data berhasil diupdate
       Swal.fire({
         icon: "success",
         title: "Berhasil",
@@ -70,12 +78,15 @@ export const EditIndukAdmin = () => {
         timer: 1000,
       });
 
+      // Mengarahkan user ke halaman admin setelah data berhasil diupdate
       return navigate("/upt/" + params.id + "/admin");
     } catch (error) {
+      // Menampilkan error di console jika terjadi kesalahan
       console.log(error);
     }
   };
 
+  // Mengambil data induk dari API saat komponen pertama kali dimuat
   useEffect(() => {
     let token = localStorage.getItem("token");
 
@@ -91,23 +102,22 @@ export const EditIndukAdmin = () => {
 
         let resJson = await res.json();
 
-        if (res.status != 200) {
+        // Menampilkan pesan error di console jika status response bukan 200
+        if (res.status !== 200) {
           return console.log(resJson.message);
         }
 
-        
+        // Mengupdate state dengan data yang diterima dari API
         let resData = resJson?.data;
         setItemName(resJson.data.item_name)
         setInduk(resJson?.data);
         let center = {
           lng: resData.longitude,
-              lat: resData.latitude
-      }
-      // const center = {
-      //     lng: resData?.longitude,
-      //     lat: resData?.latitude
-      setPosition(center)
+          lat: resData.latitude
+        }
+        setPosition(center)
       } catch (error) {
+        // Menampilkan error di console jika terjadi kesalahan
         console.log(error);
       }
     };
@@ -117,6 +127,7 @@ export const EditIndukAdmin = () => {
   const markerRef = useRef(null);
 
 
+  // Mendefinisikan event handler untuk marker pada peta
   const eventHandlers = useMemo(
     () => ({
       dragend() {
@@ -139,11 +150,13 @@ export const EditIndukAdmin = () => {
     [latitude, longitude, induk]
   );
 
+  // Fungsi untuk mengubah view peta
   function ChangeView({ center, zoom }) {
     const map = useMap();
     map.setView(center, zoom);
     return null;
   }
+  // Render komponen
   return (
     <LayoutAdmin>
       <div
@@ -188,16 +201,7 @@ export const EditIndukAdmin = () => {
       <div className="m-3">
         <h5 style={{ paddingBottom: "20px" }}>Edit Tanah Induk</h5>
 
-        {/* <div className="error-text-container w-100">
-          {message.map((item, key) => {
-            return (
-              <div className="text-danger" key={key}>
-                {item}
-              </div>
-            );
-          })}
-        </div> */}
-
+        {/* Form untuk mengedit data tanah induk */}
         <form className="form-tambah-tanah d-flex flex-col gap-3 px-5">
           <div>
             <label htmlFor="nama-jenis-barang">Nama/Jenis Barang</label>
@@ -345,16 +349,10 @@ export const EditIndukAdmin = () => {
                                 }
                             />
                         </div>
-          {/* <div>
-                        <label htmlFor="sertifikat-nilai">Nilai Aset</label>
-                        <input
-                            type="text"
-                            className="w-100"
-                            name="sertifikat-nilai"
-                        />
-                    </div> */}
         </form>
       </div>
     </LayoutAdmin>
   );
 };
+
+

@@ -8,21 +8,30 @@ import markerIconPng from "leaflet/dist/images/marker-icon.png"
 
 import LayoutAdmin from "../../components/Layout/layoutAdmin";
 
+// Mendefinisikan koordinat pusat peta
 const center = {
-    lng: 112.73635667066236,
-    lat: -7.246854784171441,
+     // Bujur dari pusat peta
+     lng: 112.73635667066236,
+     // Lintang dari pusat peta
+     lat: -7.246854784171441,
   };
 export const DetailBagianPppsAdmin = () => {
+    // Mendapatkan URL backend dari variabel environment
+
     const apiUrl = process.env.REACT_APP_API_URL;
 
+    // Mendefinisikan fungsi navigasi
     const navigate = useNavigate();
+    // Mendapatkan parameter URL
     const params = useParams();
 
+    // Fungsi untuk memformat angka menjadi format mata uang Indonesia
     const formatter = new Intl.NumberFormat("id-ID", {
         style: "currency",
         currency: "IDR",
     });
 
+    // Fungsi untuk memetakan jenis pembayaran
     const mapType = (str) => {
         if (str === "pinjam_pakai") return "Pinjam Pakai";
         else if (str === "pakai_sendiri") return "Pakai Sendiri";
@@ -30,14 +39,20 @@ export const DetailBagianPppsAdmin = () => {
         return "";
     };
 
+    // Mendefinisikan state untuk menyimpan data anak
     const [children, setChildren] = useState({});
+    // Mendefinisikan state untuk menyimpan latitude
     const [latitude, setLatitude] = useState("");
-  const [longitude, setLongitude] = useState("");
+    // Mendefinisikan state untuk menyimpan longitude
+    const [longitude, setLongitude] = useState("");
 
+    // Mendefinisikan state untuk menyimpan pusat peta
 const [centers, setCenters] = useState(center)
 //   const [centers, setCenters] = useState({lng:0,lat:0});
 
 // eslint-disable-next-line react-hooks/exhaustive-deps
+  
+// fungsi untuk melakukan fetch data tanah bidang 
 const fetchInduk = async (token) => {
     // console.log(token)
     try {
@@ -54,68 +69,40 @@ const fetchInduk = async (token) => {
 
         let resJson = await res.json();
 
+        // Menampilkan pesan error di console jika status response bukan 200
         if (res.status !== 200) {
             return console.log(resJson.message);
         }
 
+        // Mengupdate state dengan data yang diterima dari API
         let resData = resJson.data;
-        // console.log(resJson.data)
         setChildren(resData);
-        // setChildren(resData);
         setLatitude(resData?.latitude);
         setLongitude(resData?.longitude);
-        // setCenters(lng:resData?.longitude, lat:resData?.latitude})
 
        let center = {
             lng: resData.longitude,
                 lat: resData.latitude
         }
-        // const center = {
-        //     lng: resData?.longitude,
-        //     lat: resData?.latitude
+      
         setCenters(center)
-        // }
-        // const center = {
-        //     lng: resData?.longitude,
-        //     lat: resData?.latitude
-        
-        // }
-        // setCenters({lat:resData?.latitude, lng:resData?.longitude});
-        // console.log({resData})
+      
     } catch (error) {
+        // Menampilkan error di console jika terjadi kesalahan
         console.log(error);
     }
 };
 
-// console.log({children})
-//         console.log({center})
-// const center ={}
+
+    // Menggunakan useEffect untuk mendapatkan token dari localstorage yang kemudian dijadikan parameter untuk fungsi fetchInduk
     useEffect(() => {
         let token = localStorage.getItem("token");
 
        fetchInduk(token)
-    //    console.log('long', typeof children.longitude)
-    //    console.log('lat', typeof children.latitude)
-        // console.log({children})
-        // console.log({center})
-        // setCenters({lng:children.longitude, lat:children.latitude})
-
-        // fetchInduk().catch(console.error);
+   
     }, []);
-    // const center = {
-    //     lng: children.longitude,
-    //     lat: children.latitude
-    
-    // }
-    // const myIcon = L.icon({
-    //     iconUrl: 'myIcon.png',
-    //     // ...
-    //  });
-//     let center = [
-//          longitude,
-//   latitude,
-//     ]
-    // console.log("tes",children.latitude)
+  
+    // fungsi untuk merubah titik view lokasi sesuai dari database
     function ChangeView({ center, zoom }) {
         const map = useMap();
         map.setView(center, zoom);
@@ -139,6 +126,7 @@ const fetchInduk = async (token) => {
                     &larr; &emsp; Kembali
                 </div>
                 <div className="d-flex gap-2">
+                    {/* Button hapus data yang berisi props url api delete */}
                     <ButtonDelete
                         urlDelete={
                             apiUrl + "childer/delete/" + params.children_id
@@ -207,6 +195,7 @@ const fetchInduk = async (token) => {
                         </div>
                        
                         <div className="">
+                            {/* menampilkan maps */}
                         <MapContainer center={[-7.246854784171441,112.73635667066236]}  zoom={13} scrollWheelZoom={false}>
                         <ChangeView center={centers} zoom={12} /> 
 
@@ -214,6 +203,7 @@ const fetchInduk = async (token) => {
               attribution="&copy; OpenStreetMap"
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
+            {/* menampilkan marker berwarna biru dengan position yang didapatkan dari state latitude dan longitude */}
   <Marker position={[latitude, longitude]} icon={new Icon({iconUrl: markerIconPng, iconSize: [25, 41], iconAnchor: [12, 41]})}>
    
   </Marker>

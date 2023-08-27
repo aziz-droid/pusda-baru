@@ -75,7 +75,7 @@ export const TanahIndukAdmin = () => {
 
             let resJson = await res.json();
 
-            if (res.status != 200) {
+            if (res.status !== 200) {
                 return console.log(resJson.message);
             }
 
@@ -125,6 +125,7 @@ export const TanahIndukAdmin = () => {
         }
     };
 
+    // fungsi untuk import tanah bidang dari file
     const importDataTanahInduk = () => {
 
         Swal.fire({

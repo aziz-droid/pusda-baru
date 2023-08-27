@@ -23,8 +23,8 @@ export const ModalPembayaran = ({
     payment_amount: "",
   });
 
-  // const [message, setMessage] = useState([]);
-
+  
+  // fungsi handlesubmit yang berfungsi untuk mengirim data dari form lalu dikirim ke url API tambah informasi pembayaran
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -94,6 +94,7 @@ export const ModalPembayaran = ({
   const loadTotalRef = useRef();
   const progressRef = useRef();
 
+  
   const UploadFile = () => {
     const file = uploadRef.current.files[0];
     setFile(URL.createObjectURL(file));

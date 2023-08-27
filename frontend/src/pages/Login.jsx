@@ -11,6 +11,7 @@ export const Login = () => {
         password: (localStorage.getItem('password') ? localStorage.getItem('password') : '34323'),
     }
 
+    // Menggunakan useEffect untuk melakukan proses login data yang terkirim dari form ke url api login
     useEffect(() => {
         async function fetchData() {
             try {
@@ -29,27 +30,7 @@ export const Login = () => {
                 // }
 
                 if (res.status === 422) {
-                    // console.log("OKKKKK")
-                    // let message = resJson.message;
-                    //
-                    // if (!Array.isArray(message))
-                    //     message = [resJson.message];
-                    //
-                    // // Jika ingin menggunakan sweetalert2 untuk menampilkan pesan error login
-                    // let messageList = "";
-                    // message.forEach((item) => {
-                    //     messageList += "<li>" + item + "</li>";
-                    // });
-                    //
-                    // return Swal.fire({
-                    //     icon: "error",
-                    //     title: "Oops...",
-                    //     html: messageList,
-                    //     // text: messageList,
-                    //     // timer: 1000,
-                    // });
-
-                    // return setMessage(message);
+                   
 
 
                 } else {

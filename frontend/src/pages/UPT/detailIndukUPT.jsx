@@ -6,9 +6,15 @@ import { TableBagianPpps } from "../../components/Table/TableUPT/TableBagianPpps
 import { TableBagianSr } from "../../components/Table/TableUPT/TableBagianSr";
 import { ModalTambahBagianUPT } from "../../components/Modal/ModalTambahBagianUPT/ModalTambahBagianUPT";
 import ReactPaginate from "react-paginate";
-
+import { MapContainer, Marker,Circle, Popup, TileLayer, useMap, Polygon  } from 'react-leaflet'
+import {Icon, latLng} from 'leaflet'
+import markerIconPng from "leaflet/dist/images/marker-icon.png"
 import Swal from "sweetalert2";
 
+const center = {
+    lng: 112.73635667066236,
+    lat: -7.246854784171441,
+  };
 export const DetailIndukUPT = ({ induk_id }) => {
     const apiUrl = process.env.REACT_APP_API_URL;
 
@@ -46,6 +52,10 @@ export const DetailIndukUPT = ({ induk_id }) => {
     const [pageCount, setPageCount] = useState(0);
     const [startingPoint, setStartingPoint] = useState(0);
     const [emptyMsg, setEmptyMsg] = useState("");
+    // Mendefinisikan state untuk latitude dan longitude
+    const [latitude, setLatitude] = useState("");
+    const [longitude, setLongitude] = useState("");
+    const [centers, setCenters] = useState(center)
 
     useEffect(() => {
         let token = localStorage.getItem("token");
@@ -68,6 +78,14 @@ export const DetailIndukUPT = ({ induk_id }) => {
 
                 let resData = resJson.data;
                 setInduk(resData);
+                setLatitude(resData?.latitude);
+                setLongitude(resData?.longitude);
+                let center = {
+                    lng: resData.longitude,
+                        lat: resData.latitude
+                }
+               
+                setCenters(center)
             } catch (error) {
                 console.log(error);
             }
@@ -94,7 +112,7 @@ export const DetailIndukUPT = ({ induk_id }) => {
 
                 let resJson = await res.json();
 
-                if (res.status != 200) {
+                if (res.status !== 200) {
                     return console.log(resJson.message);
                 }
 
@@ -118,6 +136,7 @@ export const DetailIndukUPT = ({ induk_id }) => {
                 setEmptyMsg("");
 
                 setChildren(resData);
+               
             } catch (error) {
                 console.log(error);
             }
@@ -179,7 +198,12 @@ export const DetailIndukUPT = ({ induk_id }) => {
             }
         });
     };
-
+  // Fungsi untuk mengubah tampilan peta
+  function ChangeView({ center, zoom }) {
+    const map = useMap();
+    map.setView(center, zoom);
+    return null;
+  }
     return (
         <LayoutUPT>
             <ModalTambahBagianUPT
@@ -231,7 +255,7 @@ export const DetailIndukUPT = ({ induk_id }) => {
                 </div>
                 <div className="informasi-tanah">
                     <div className="d-flex mx-4">
-                        <div className="left">
+                        <div className="left w-50">
                             <div>
                                 <p className="title p-0 m-0">
                                     Nama/Jenis Barang
@@ -262,7 +286,7 @@ export const DetailIndukUPT = ({ induk_id }) => {
                                 </div>
                             </div>
                         </div>
-                        <div className="right">
+                        <div className="right w-100">
                             <div>
                                 <p className="title p-0 m-0">Luas Induk (m)</p>
                                 <p className="font-semibold">{induk.large}</p>
@@ -271,6 +295,20 @@ export const DetailIndukUPT = ({ induk_id }) => {
                                 <p className="title p-0 m-0">Alamat</p>
                                 <p className="font-semibold">{induk.address}</p>
                             </div>
+                            <div className="">
+                        <MapContainer center={[-7.246854784171441,112.73635667066236]}  zoom={13} scrollWheelZoom={false}>
+                        <ChangeView center={centers} zoom={16} /> 
+
+                        <TileLayer
+              attribution="&copy; OpenStreetMap"
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+            <Marker  position={centers} icon={new Icon({iconUrl: markerIconPng, iconSize: [25, 41], iconAnchor: [12, 41]})} />
+  <Circle center={[latitude, longitude]} radius={induk.large ? induk.large : 0 } icon={new Icon({iconUrl: markerIconPng, iconSize: [25, 41], iconAnchor: [12, 41]})}>
+    
+  </Circle>
+</MapContainer>
+                        </div>
                         </div>
                     </div>
                 </div>

@@ -13,7 +13,7 @@ export const SideMenuUPT = () => {
           to="/dashboard/upt"
           className="side-menu-header d-flex justify-content-center"
         >
-          <img className="w-75 p-4" src="/logo.png" alt="logo" />
+          <img className="w-75 p-4" src="/simamat/logo.png" alt="logo" />
         </Link>
         <div className="side-menu-list d-flex flex-col">
           <SideMenuItem title="DASHBOARD" id="/dashboard/upt" />

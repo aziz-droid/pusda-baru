@@ -12,25 +12,41 @@ import {Icon, latLng} from 'leaflet'
 
 import markerIconPng from "leaflet/dist/images/marker-icon.png"
 
+
+// Mendefinisikan koordinat pusat peta
 const center = {
+    // Bujur dari pusat peta
     lng: 112.73635667066236,
+    // Lintang dari pusat peta
     lat: -7.246854784171441,
   };
-export const DetailBagianSrAdmin = () => {
-    const backendUrl = process.env.REACT_APP_BACKEND_URL;
-    const apiUrl = process.env.REACT_APP_API_URL;
 
+// Mendefinisikan komponen DetailBagianSrAdmin
+export const DetailBagianSrAdmin = () => {
+    // Mendapatkan URL backend dari variabel environment
+    const backendUrl = process.env.REACT_APP_BACKEND_URL;
+   
+    // Mendapatkan URL API dari variabel environment
+    const apiUrl = process.env.REACT_APP_API_URL;
+    // Mendefinisikan fungsi navigasi
     const navigate = useNavigate();
+    // Mendefinisikan state untuk menampilkan modal
     const [show, setShow] = useState(false);
+    // Mendefinisikan state untuk menampilkan modal edit
     const [showEdit, setShowEdit] = useState(false);
+    // Mendapatkan parameter URL
     const params = useParams();
 
+    // Fungsi untuk menutup modal
     const handleClose = () => setShow(false);
+    // Fungsi untuk menampilkan modal
     const handleShow = () => setShow(true);
+    // Fungsi untuk menutup modal edit
     const handleCloseEdit = () => setShowEdit(false);
+    // Fungsi untuk menampilkan modal edit
     const handleShowEdit = () => setShowEdit(true);
 
-    //format date into yyyy-mm-dd with leading zero
+    // Fungsi untuk memformat tanggal menjadi format yyyy-mm-dd
     const formatDate = (date) => {
         const d = new Date(date);
         const month = `${d.getMonth() + 1}`.padStart(2, "0");
@@ -39,11 +55,13 @@ export const DetailBagianSrAdmin = () => {
         return [year, month, day].join("-");
     };
 
+    // Fungsi untuk memformat angka menjadi format mata uang Indonesia
     const formatter = new Intl.NumberFormat("id-ID", {
         style: "currency",
         currency: "IDR",
     });
 
+    // Fungsi untuk memetakan jenis pembayaran
     const mapType = (str) => {
         if (str === "sewa_sip_bmd") return "Sewa/SIP BMD";
         else if (str === "retribusi") return "Retribusi";
@@ -51,29 +69,43 @@ export const DetailBagianSrAdmin = () => {
         return null;
     };
 
+    // Fungsi untuk menangani klik halaman
     const handlePageClick = (e) => {
         if (e.selected >= 0) {
             setPageNum(e.selected + 1);
         }
     };
 
+    // Mendefinisikan state untuk menyimpan data anak
     const [children, setChildren] = useState({});
+    // Mendefinisikan state untuk menyimpan data pembayaran
     const [payment, setPayment] = useState([]);
+    // Mendefinisikan state untuk menyimpan nomor halaman
     const [pageNum, setPageNum] = useState(1);
+    // Mendefinisikan state untuk menyimpan jumlah halaman
     const [pageCount, setPageCount] = useState(0);
+    // Mendefinisikan state untuk menyimpan titik awal
     const [startingPoint, setStartingPoint] = useState(0);
+    // Mendefinisikan state untuk menyimpan pesan kosong
     const [emptyMsg, setEmptyMsg] = useState("");
+    // Mendefinisikan state untuk menyimpan data pembayaran yang diedit
     const [paymentEdit, setPaymentEdit] = useState({});
+    // Mendefinisikan state untuk menyimpan pusat peta
     const [centers, setCenters] = useState(center)
+    // Mendefinisikan state untuk menyimpan latitude
     const [latitude, setLatitude] = useState("");
+    // Mendefinisikan state untuk menyimpan longitude
     const [longitude, setLongitude] = useState("");
 
+    // Mendefinisikan state untuk menyimpan trigger penghapusan
     const [triggerDeleted, setTriggerDeleted] = useState(false);
 
+    // Menggunakan useEffect untuk melakukan fetch data anak dan pembayaran
     useEffect(() => {
         console.log("param", params)
         let token = localStorage.getItem("token");
 
+        // Fungsi untuk melakukan fetch data anak
         const fetchChildren = async () => {
             try {
                 let res = await fetch(
@@ -110,6 +142,7 @@ export const DetailBagianSrAdmin = () => {
             }
         };
 
+        // Fungsi untuk melakukan fetch data pembayaran
         const fetchPayment = async () => {
             try {
                 let res = await fetch(
@@ -156,6 +189,7 @@ export const DetailBagianSrAdmin = () => {
         fetchPayment().catch(console.error);
     }, [triggerDeleted, pageNum]);
 
+    // Fungsi untuk mengimpor detail pembayaran admin
     const importDetailPaymentAdmin = () => {
         Swal.fire({
             title: "Import Data",
@@ -209,13 +243,17 @@ export const DetailBagianSrAdmin = () => {
             }
         });
     };
+    // Fungsi untuk mengubah tampilan peta
     function ChangeView({ center, zoom }) {
         const map = useMap();
         map.setView(center, zoom);
         return null;
       }
+    // Mengembalikan komponen yang akan ditampilkan
+   
     return (
         <LayoutAdmin>
+            {/* component modal untuk tambah data pembayaran */}
             <ModalPembayaran
                 show={show}
                 handleClose={handleClose}
@@ -225,6 +263,7 @@ export const DetailBagianSrAdmin = () => {
                 setEmptyMsg={setEmptyMsg}
             />
 
+            {/* component modal untuk tambah edit pembayaran */}
             <ModalPembayaranEdit
                 showEdit={showEdit}
                 handleCloseEdit={handleCloseEdit}
@@ -428,6 +467,7 @@ export const DetailBagianSrAdmin = () => {
                         {emptyMsg === "" ? (
                             payment.map((item, key) => {
                                 return (
+                                    // menampilkan component table informasi pembayaran beserta tombol action edit dan delete
                                     <TablePembayaran
                                         iterator={startingPoint + key}
                                         payment={item}

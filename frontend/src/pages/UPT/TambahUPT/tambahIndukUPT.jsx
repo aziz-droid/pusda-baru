@@ -1,9 +1,17 @@
-import { useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import LayoutUPT from "../../../components/Layout/layoutUPT";
+import { MapContainer, Marker, Popup, TileLayer, useMap, Circle  } from 'react-leaflet'
+// import { MapContainer, TileLayer, FeatureGroup } from "react-leaflet";
+import {Icon, latLng} from 'leaflet'
 
+import markerIconPng from "leaflet/dist/images/marker-icon.png"
+import "leaflet-draw/dist/leaflet.draw.css";
 import Swal from "sweetalert2";
-
+const center = {
+    lng: 112.73635667066236,
+    lat: -7.246854784171441,
+};
 export const TambahIndukUPT = () => {
     const apiUrl = process.env.REACT_APP_API_URL;
 
@@ -16,6 +24,8 @@ export const TambahIndukUPT = () => {
         certificate_date: "",
         address: "",
         large: "",
+        latitude:"",
+        longitude:"",
         asset_value: "",
         item_name: "",
         upt: params.id
@@ -42,7 +52,7 @@ export const TambahIndukUPT = () => {
 
             let resJson = await res.json();
 
-            if (res.status != 201) {
+            if (res.status !== 201) {
                 let message = resJson.message;
                 if (!Array.isArray(message)) message = [resJson.message];
 
@@ -74,6 +84,37 @@ export const TambahIndukUPT = () => {
         }
     };
 
+    // Mendefinisikan ref untuk marker
+    const markerRef = useRef(null);
+
+    // Mendefinisikan state untuk posisi marker
+    const [position, setPosition] = useState(center);
+    // Mendefinisikan state untuk latitude dan longitude
+    const [latitude, setLatitude] = useState("");
+    const [longitude, setLongitude] = useState("");
+
+    // Mendefinisikan event handler untuk marker
+    const eventHandlers = useMemo(
+        () => ({
+            dragend() {
+                const marker = markerRef.current;
+                if (marker != null) {
+                    setPosition(marker.getLatLng());
+                    
+                    setLatitude(marker.getLatLng().lat);
+                    setLongitude(marker.getLatLng().lng);
+
+                    setInduk({
+                        ...induk,
+                        latitude: marker.getLatLng().lat,
+                        longitude: marker.getLatLng().lng,
+                    })
+                    
+                }
+            },
+        }),
+        [latitude, longitude, induk]
+    );
     return (
         <LayoutUPT>
             <div
@@ -236,7 +277,44 @@ export const TambahIndukUPT = () => {
                             }
                         ></textarea>
                     </div>
-
+                    <div>
+                            <MapContainer center={center} zoom={13} scrollWheelZoom={false}>
+                                <TileLayer
+                                    attribution="&copy; OpenStreetMap"
+                                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                                />
+                                <Marker  draggable
+                                    eventHandlers={eventHandlers}
+                                    position={position}
+                                    ref={markerRef} icon={new Icon({iconUrl: markerIconPng, iconSize: [25, 41], iconAnchor: [12, 41]})}>
+                                    <Circle center={[latitude, longitude]} radius={induk.large ? induk.large : 0 } icon={new Icon({iconUrl: markerIconPng, iconSize: [25, 41], iconAnchor: [12, 41]})}>
+   
+                                    </Circle>
+                                </Marker>
+                            </MapContainer>
+                        </div>
+                        <div>
+                            <label htmlFor="latitude">Latitude</label>
+                            <input
+                                disabled
+                                type="number"
+                                className="w-100"
+                                name="latitude"
+                                placeholder="Masukkan latitude"
+                                value={latitude}
+                            />
+                        </div>
+                        <div>
+                            <label htmlFor="longitude">Longitude</label>
+                            <input
+                                disabled
+                                type="number"
+                                className="w-100"
+                                name="longitude"
+                                placeholder="Masukkan longitude"
+                                value={longitude}
+                            />
+                        </div>
                     {/* <div>
                         <label htmlFor="sertifikat-nilai">Nilai Aset</label>
                         <input

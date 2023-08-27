@@ -11,22 +11,29 @@ import {Icon, latLng} from 'leaflet'
 import markerIconPng from "leaflet/dist/images/marker-icon.png"
 
 import Swal from "sweetalert2";
-
+// Mendefinisikan koordinat pusat peta
 const center = {
     lng: 112.73635667066236,
     lat: -7.246854784171441,
   };
+// Mendefinisikan komponen DetailIndukAdmin dengan properti induk_id
 export const DetailIndukAdmin = ({ induk_id }) => {
+    // Mendapatkan URL API dari environment variable
     const apiUrl = process.env.REACT_APP_API_URL;
 
+    // Menggunakan hook useNavigate untuk navigasi
     const navigate = useNavigate();
+    // Menggunakan hook useState untuk menampilkan dan menyembunyikan modal
     const [show, setShow] = useState(false);
+    // Menggunakan hook useParams untuk mendapatkan parameter URL
     const params = useParams();
 
+    // Fungsi untuk menutup modal
     const handleClose = () => setShow(false);
+    // Fungsi untuk menampilkan modal
     const handleShow = () => setShow(true);
 
-    //format date into yyyy-mm-dd with leading zero
+    // Fungsi untuk memformat tanggal menjadi format yyyy-mm-dd
     const formatDate = (date) => {
         const d = new Date(date);
         const month = `${d.getMonth() + 1}`.padStart(2, "0");
@@ -35,22 +42,26 @@ export const DetailIndukAdmin = ({ induk_id }) => {
         return [year, month, day].join("-");
     };
 
+    // Membuat formatter untuk format mata uang Indonesia
     const formatter = new Intl.NumberFormat("id-ID", {
         style: "currency",
         currency: "IDR",
     });
 
+    // Mendefinisikan state untuk latitude dan longitude
     const [latitude, setLatitude] = useState("");
-  const [longitude, setLongitude] = useState("");
-const [centers, setCenters] = useState(center)
+    const [longitude, setLongitude] = useState("");
+    const [centers, setCenters] = useState(center)
 
 
+    // Fungsi untuk menangani klik halaman
     const handlePageClick = (e) => {
         if (e.selected >= 0) {
             setPageNum(e.selected + 1);
         }
     };
 
+    // Mendefinisikan state untuk induk, anak, pencarian, halaman, jumlah halaman, titik awal, dan pesan kosong
     const [induk, setInduk] = useState({});
     const [children, setChildren] = useState([]);
     const [search, setSearch] = useState("");
@@ -59,9 +70,11 @@ const [centers, setCenters] = useState(center)
     const [startingPoint, setStartingPoint] = useState(0);
     const [emptyMsg, setEmptyMsg] = useState("");
 
+    // Menggunakan hook useEffect untuk melakukan fetch data tanah bidang dan tanah bagian
     useEffect(() => {
         let token = localStorage.getItem("token");
 
+        // Fungsi untuk fetch data induk
         const fetchInduk = async () => {
             try {
                 let res = await fetch(apiUrl + "parent/" + params.induk_id, {
@@ -74,7 +87,7 @@ const [centers, setCenters] = useState(center)
 
                 let resJson = await res.json();
 
-                if (res.status != 200) {
+                if (res.status !== 200) {
                     return console.log(resJson.message);
                 }
 
@@ -86,16 +99,14 @@ const [centers, setCenters] = useState(center)
                     lng: resData.longitude,
                         lat: resData.latitude
                 }
-                // const center = {
-                //     lng: resData?.longitude,
-                //     lat: resData?.latitude
+               
                 setCenters(center)
-                // }
             } catch (error) {
                 console.log(error);
             }
         };
 
+        // Fungsi untuk fetch data tanah bagian
         const fetchChildren = async () => {
             try {
                 let res = await fetch(
@@ -117,7 +128,7 @@ const [centers, setCenters] = useState(center)
 
                 let resJson = await res.json();
 
-                if (res.status != 200) {
+                if (res.status !== 200) {
                     return console.log(resJson.message);
                 }
 
@@ -147,6 +158,7 @@ const [centers, setCenters] = useState(center)
         fetchChildren().catch(console.error);
     }, [pageNum, search]); // eslint-disable-line react-hooks/exhaustive-deps
 
+    // Fungsi untuk import data tanah bagian
     const importDetailIndukAdmin = () => {
         Swal.fire({
             title: "Import Data",
@@ -199,20 +211,15 @@ const [centers, setCenters] = useState(center)
             }
         });
     };
+    // Fungsi untuk mengubah tampilan peta
     function ChangeView({ center, zoom }) {
         const map = useMap();
         map.setView(center, zoom);
         return null;
       }
-      const multiPolygon = [
-        [
-           [-7.236531, 112.72728],
-        [-7.242674, 112.737923],
-        [-7.24438, 112.726936]
-        ],
       
-      ]
       
+    // Render komponen
     return (
         <LayoutAdmin>
             <ModalTambahBagian
@@ -243,6 +250,7 @@ const [centers, setCenters] = useState(center)
                 >
                     <h5>Informasi Tanah Bidang</h5>
                     <div className="d-flex gap-2">
+                        {/* komponen button hapus data tanah bidang yang berisi props yang berisi endpoint hapus data tanah bidang*/}
                         <ButtonDelete
                             urlDelete={
                                 apiUrl + "parent/delete/" + params.induk_id
@@ -427,3 +435,5 @@ const [centers, setCenters] = useState(center)
         </LayoutAdmin>
     );
 };
+
+
