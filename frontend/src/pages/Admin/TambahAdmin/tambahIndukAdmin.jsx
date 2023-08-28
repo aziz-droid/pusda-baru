@@ -7,7 +7,6 @@ import { MapContainer, Marker, Popup, TileLayer, useMap, Circle  } from 'react-l
 import {Icon, latLng} from 'leaflet'
 
 import markerIconPng from "leaflet/dist/images/marker-icon.png"
-import "leaflet-draw/dist/leaflet.draw.css";
 // import osm from "./osm-providers";
 
 
