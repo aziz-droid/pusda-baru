@@ -9,8 +9,8 @@ import Swal from "sweetalert2";
 
 
 const center = {
-  lng: 112.73635667066236,
-  lat: -7.246854784171441,
+   lng: 112.1716087070837,
+  lat: -7.516677410514516,
 };
 export const EditBagianSrAdmin = () => {
   const backendUrl = process.env.REACT_APP_BACKEND_URL;
@@ -379,7 +379,7 @@ export const EditBagianSrAdmin = () => {
               />
             </div>
             <div>
-            <MapContainer center={center} zoom={13} scrollWheelZoom={false}>
+            <MapContainer center={center} zoom={8} scrollWheelZoom={false}>
             <ChangeView center={position} zoom={12} /> 
 
                         <TileLayer

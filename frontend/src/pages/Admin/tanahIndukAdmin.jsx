@@ -51,6 +51,7 @@ export const TanahIndukAdmin = () => {
         luas: "",
     });
 
+    
     const fetchData = async () => {
 
         let token = localStorage.getItem("token");

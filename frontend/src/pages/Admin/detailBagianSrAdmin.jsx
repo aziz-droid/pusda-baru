@@ -7,8 +7,8 @@ import { ButtonDelete } from "../../components/Button/ButtonDelete";
 import { TablePembayaran } from "../../components/Table/TablePembayaran";
 import ReactPaginate from "react-paginate";
 import Swal from "sweetalert2";
-import { MapContainer, Marker, Popup, TileLayer, useMap  } from 'react-leaflet'
-import {Icon, latLng} from 'leaflet'
+import { MapContainer, Marker, TileLayer, useMap  } from 'react-leaflet'
+import {Icon} from 'leaflet'
 
 import markerIconPng from "leaflet/dist/images/marker-icon.png"
 
@@ -16,9 +16,9 @@ import markerIconPng from "leaflet/dist/images/marker-icon.png"
 // Mendefinisikan koordinat pusat peta
 const center = {
     // Bujur dari pusat peta
-    lng: 112.73635667066236,
+     lng: 112.1716087070837,
     // Lintang dari pusat peta
-    lat: -7.246854784171441,
+    lat: -7.516677410514516,
   };
 
 // Mendefinisikan komponen DetailBagianSrAdmin
@@ -102,7 +102,7 @@ export const DetailBagianSrAdmin = () => {
 
     // Menggunakan useEffect untuk melakukan fetch data anak dan pembayaran
     useEffect(() => {
-        console.log("param", params)
+        // console.log("param", params)
         let token = localStorage.getItem("token");
 
         // Fungsi untuk melakukan fetch data anak
@@ -121,12 +121,12 @@ export const DetailBagianSrAdmin = () => {
 
                 let resJson = await res.json();
 
-                if (res.status != 200) {
+                if (res.status !== 200) {
                     return console.log(resJson.message);
                 }
 
                 let resData = resJson.data;
-
+                // console.log({resData})
                 setChildren(resData);
                 setLatitude(resData?.latitude);
                 setLongitude(resData?.longitude);
@@ -342,14 +342,29 @@ export const DetailBagianSrAdmin = () => {
                         </div>
                         <div>
                             <label htmlFor="koordinat">Latitude (LS BT)</label>
+                        {children.latitude  !==  "" ? (
+
                             <h5>{children.latitude}</h5>
+                        ):(
+                            <h5 className=" fw-light fst-italic">Belum Di Isi</h5>
+                        )}
                         </div>
                         <div>
                             <label htmlFor="koordinat">Longitude (LS BT)</label>
-                            <h5>{children.longitude}</h5>
+                            {children.longitude  !==  "" ? (
+
+<h5>{children.longitude}</h5>
+):(
+<h5 className=" fw-light fst-italic">Belum Di Isi</h5>
+)}
                         </div>
                         <div>
-                        <MapContainer center={[-7.246854784171441,112.73635667066236]}  zoom={13} scrollWheelZoom={false}>
+                        <label htmlFor="koordinat">Peta Lokasi</label>
+
+                        {children.latitude && children.longitude !==  "" ? (
+                            <>
+{/* {console.log('ini children',children)} */}
+                        <MapContainer center={[-7.246854784171441,112.73635667066236]}  zoom={8} scrollWheelZoom={false}>
                         <ChangeView center={centers} zoom={12} /> 
 
                         <TileLayer
@@ -360,8 +375,15 @@ export const DetailBagianSrAdmin = () => {
    
   </Marker>
 </MapContainer>
+</>
+                        ) : (
+                            <h5 className=" fw-light fst-italic">
+                               
+                            Belum Di Tentukan
+                    </h5>
+                        )}
                         </div>
-                        
+                       
                     </div>
                     <div
                         className="right-form d-flex flex-col gap-3 w-100"
@@ -404,6 +426,7 @@ export const DetailBagianSrAdmin = () => {
                             <label className="font-semibold">
                                 Surat Perjanjian
                             </label>
+                            {children.agreement_letter !== 'null' ? (
                             <h5 className="filename">
                                 <a
                                     href={
@@ -414,11 +437,20 @@ export const DetailBagianSrAdmin = () => {
                                     SURAT PERJANJIAN-1.PDF
                                 </a>
                             </h5>
+                            ) : 
+                            (
+                                <h5 className=" fw-light fst-italic">
+                               
+                                    Belum Di Upload
+                            </h5>
+                            )}
                         </div>
                         <div className="d-flex flex-col">
                             <label className="font-semibold">
                                 Surat Permohonan
                             </label>
+                            {children.application_letter !== 'null' ? (
+
                             <h5 className="filename">
                                 <a
                                     href={
@@ -429,6 +461,13 @@ export const DetailBagianSrAdmin = () => {
                                     SURAT PERMOHONAN-1.PDF
                                 </a>
                             </h5>
+                             ) : 
+                             (
+                                 <h5 className=" fw-light fst-italic">
+                                
+                                     Belum Di Upload
+                             </h5>
+                             )}
                         </div>
                     </div>
                 </div>

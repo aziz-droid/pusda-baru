@@ -24,7 +24,6 @@ export const TablePembayaran = ({
         currency: "IDR",
     });
 
-    console.log({urlRedirect})
     return (
         <div>
             <DeleteConfirmation
@@ -62,6 +61,7 @@ export const TablePembayaran = ({
                 </div>
                 <div className="col">
                     <p className="table-title p-0 m-0">BUKTI PEMBAYARAN</p>
+                    {payment.proof_of_payment !== null ? (
                     <p className="p-0 m-0 filename">
                         <a
                             href={backendUrl + `proofofpayment/`+payment.proof_of_payment}
@@ -70,6 +70,9 @@ export const TablePembayaran = ({
                             BUKTI
                         </a>
                     </p>
+                    ) : (
+                    <p className="p-0 m-0 fw-light fst-italic"> Belum Di Upload </p>
+                    )}
                 </div>
                 <div className="col d-flex gap-2 align-items-center justify-content-center w-100 p-0">
                     <div

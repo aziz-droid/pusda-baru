@@ -52,7 +52,9 @@ class AnakImport implements ToModel, WithHeadingRow
             'present_condition'  => $row['kondisi_sekarang'] ?? NULL,
             'description'  => $row['keterangan'],
             'application_letter' => 'null',
-            'agreement_letter' => 'null'
+            'agreement_letter' => 'null',
+            'latitude'=> $row['garis_lintang'] ? $row['garis_lintang'] : null ,
+            'longitude'=> $row['garis_bujur'] ? $row['garis_bujur'] : null,
         ]);
         // } else {
         // $children = new Childer([

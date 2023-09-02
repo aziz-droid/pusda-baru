@@ -75,7 +75,7 @@ export const Login = () => {
             {/* pict */}
             <div className="hero-picture">
                 <div className="bg-cyanblue">
-                    <img src="simamat/coverimg.png" alt="home cover" />
+                    <img src="simamat/pusda.jpeg" alt="home cover" style={{ objectFit:'cover' }} />
                 </div>
             </div>
 

@@ -1,9 +1,18 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Link, useParams } from "react-router-dom";
 import { ButtonDelete } from "../../components/Button/ButtonDelete";
+import { MapContainer, Marker, TileLayer, useMap  } from 'react-leaflet'
+import {Icon} from 'leaflet'
 
+import markerIconPng from "leaflet/dist/images/marker-icon.png"
 import LayoutUPT from "../../components/Layout/layoutUPT";
 
+const center = {
+    // Bujur dari pusat peta
+     lng: 112.1716087070837,
+    // Lintang dari pusat peta
+    lat: -7.516677410514516,
+ };
 export const DetailBagianPppsUPT = () => {
     const apiUrl = process.env.REACT_APP_API_URL;
 
@@ -22,7 +31,14 @@ export const DetailBagianPppsUPT = () => {
         return "";
     };
 
+    // Mendefinisikan state untuk menyimpan data anak
     const [children, setChildren] = useState({});
+    // Mendefinisikan state untuk menyimpan latitude
+    const [latitude, setLatitude] = useState("");
+    // Mendefinisikan state untuk menyimpan longitude
+    const [longitude, setLongitude] = useState("");
+    // Mendefinisikan state untuk menyimpan pusat peta
+const [centers, setCenters] = useState(center)
 
     useEffect(() => {
         let token = localStorage.getItem("token");
@@ -42,13 +58,22 @@ export const DetailBagianPppsUPT = () => {
 
                 let resJson = await res.json();
 
-                if (res.status != 200) {
+                if (res.status !== 200) {
                     return console.log(resJson.message);
                 }
 
                 let resData = resJson.data;
 
                 setChildren(resData);
+                setLatitude(resData?.latitude);
+        setLongitude(resData?.longitude);
+
+       let center = {
+            lng: resData.longitude,
+                lat: resData.latitude
+        }
+      
+        setCenters(center)
             } catch (error) {
                 console.log(error);
             }
@@ -56,6 +81,13 @@ export const DetailBagianPppsUPT = () => {
 
         fetchInduk().catch(console.error);
     }, []);
+
+    // fungsi untuk merubah titik view lokasi sesuai dari database
+    function ChangeView({ center, zoom }) {
+        const map = useMap();
+        map.setView(center, zoom);
+        return null;
+      }
     return (
         <LayoutUPT>
             <div
@@ -105,7 +137,7 @@ export const DetailBagianPppsUPT = () => {
                     Informasi Tanah Bagian
                 </h5>
                 <div className="d-flex informasi-tanah-bagian gap-5 justify-content-between">
-                    <div className="left-form d-flex flex-col gap-3 ">
+                    <div className="left-form d-flex flex-col gap-3 w-100">
                         <div>
                             <label htmlFor="nilai-sewa">
                                 Jenis Perikatan Pemanfaatan
@@ -126,16 +158,55 @@ export const DetailBagianPppsUPT = () => {
                         </div>
                     </div>
                     <div
-                        className="right-form d-flex flex-col gap-3"
-                        style={{ paddingRight: "100px" }}
+                        className="right-form d-flex flex-col gap-3 w-100 "
                     >
+                       <div>
+                            <label htmlFor="koordinat">Latitude (LS BT)</label>
+                        {children.latitude  !==  "" ? (
+
+                            <h5>{children.latitude}</h5>
+                        ):(
+                            <h5 className=" fw-light fst-italic">Belum Di Isi</h5>
+                        )}
+                        </div>
                         <div>
-                            <label htmlFor="koordinat">Koordinat (LS BT)</label>
-                            <h5>{children.coordinate}</h5>
+                            <label htmlFor="koordinat">Longitude (LS BT)</label>
+                            {children.longitude  !==  "" ? (
+
+<h5>{children.longitude}</h5>
+):(
+<h5 className=" fw-light fst-italic">Belum Di Isi</h5>
+)}
                         </div>
                         <div>
                             <label htmlFor="keterangan">Keterangan</label>
                             <h5>{children.description}</h5>
+                        </div>
+                       
+                        <div className="">
+                        <label htmlFor="koordinat">Peta Lokasi</label>
+                        {children.latitude && children.longitude !==  "" ? (
+                            <>
+                            {/* menampilkan maps */}
+                        <MapContainer center={[-7.246854784171441,112.73635667066236]}  zoom={8} scrollWheelZoom={false}>
+                        <ChangeView center={centers} zoom={12} /> 
+
+                        <TileLayer
+              attribution="&copy; OpenStreetMap"
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+            {/* menampilkan marker berwarna biru dengan position yang didapatkan dari state latitude dan longitude */}
+  <Marker position={[latitude, longitude]} icon={new Icon({iconUrl: markerIconPng, iconSize: [25, 41], iconAnchor: [12, 41]})}>
+   
+  </Marker>
+</MapContainer>
+</>
+) : (
+    <h5 className=" fw-light fst-italic">
+       
+    Belum Di Tentukan
+</h5>
+)}
                         </div>
                     </div>
                 </div>

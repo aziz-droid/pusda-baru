@@ -185,7 +185,7 @@ export const ModalPembayaranEdit = ({
                 htmlFor="surat-permohonan"
                 className="font-semibold file-input d-flex flex-col justify-content-center align-items-center"
               >
-                <img src="/upload.png" width={80} />
+                <img src="/upload.png" width={80} alt="" />
                 <p className="p-0 m-0">
                   Drag & drop files or{" "}
                   <span style={{ color: "#483EA8" }}>Browse</span>

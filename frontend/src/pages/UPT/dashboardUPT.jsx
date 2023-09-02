@@ -3,6 +3,7 @@ import { DashboardTableRow } from "../../components/Dashboard/DashboardTableRow"
 import LayoutUPT from "../../components/Layout/layoutUPT";
 
 import { ExportExcel } from "../../components/ExportExcel";
+import { Table } from "react-bootstrap";
 
 export const DashboardUPT = () => {
   const apiUrl = process.env.REACT_APP_API_URL;
@@ -70,6 +71,7 @@ export const DashboardUPT = () => {
         });
 
         setDashboardData(resData);
+        console.log({resData})
       } catch (error) {
         console.log(error);
       }
@@ -131,53 +133,103 @@ export const DashboardUPT = () => {
         <div className="d-flex justify-content-between py-2 px-2">
           <h5 className="font-semibold">Informasi Total Data UPT</h5>
         </div>
-        <div className="">
-          <div className="row row-header">
-            <div className="col d-flex align-items-center justify-content-center">
-              NAMA UPT
-            </div>
-            <div className="col d-flex align-items-center justify-content-center">
-              Jumlah Bidang Tanah
-            </div>
-            <div className="col d-flex flex-col align-items-center justify-content-center">
-              TOTAL PINJAM PAKAI
-              <br />
-            </div>
-            <div className="col d-flex flex-col align-items-center justify-content-center">
-              TOTAL PAKAI SENDIRI
-              <br />
-            </div>
-            <div className="col d-flex flex-col align-items-center justify-content-center">
-              TOTAL SEWA/SIP BMD
-              <br />
-              <div className="row py-2">
-                <div className="col">TANAH(M)</div>
-                <div className="col">RUPIAH</div>
-              </div>
-            </div>
-            <div className="col d-flex flex-col align-items-center justify-content-center py-2">
-              TOTAL RETRIBUSI
-              <br />
-              <div className="row py-2">
-                <div className="col">TANAH(M)</div>
-                <div className="col">RUPIAH</div>
-              </div>
-            </div>
-          </div>
-          {emptyMsg === "" ? (
-            <>
-              {dashboardData.map((item) => {
-                return (
-                  <DashboardTableRow title={userRoles} dashboardItem={item} />
-                );
-              })}
-            </>
-          ) : (
-            <>
-              <div class="text-center">{emptyMsg}</div>
-            </>
-          )}
-        </div>
+        <Table responsive bordered striped>
+          <thead>
+            <tr>
+              <th rowSpan={2} className=" align-middle text-center">
+                NAMA UPT
+              </th>
+
+              <th rowSpan={2} className=" align-middle text-center">
+                Jumlah Bidang Tanah
+              </th>
+              <th rowSpan={2} className=" align-middle text-center">
+                TOTAL PINJAM PAKAI
+              </th>
+              <th rowSpan={2} className=" align-middle text-center">
+                TOTAL PAKAI SENDIRI
+              </th>
+
+              <th colSpan={2} className="text-center">
+                TOTAL SEWA/SIP BMD
+              </th>
+              <th colSpan={2} className="text-center">
+                TOTAL RETRIBUSI
+              </th>
+            </tr>
+            <tr>
+              <th className="text-center">TANAH(M)</th>
+              <th className="text-center">RUPIAH</th>
+              <th className="text-center">TANAH(M)</th>
+              <th className="text-center">RUPIAH</th>
+            </tr>
+          </thead>
+          <tbody>
+            {dashboardData.slice(0, 7).map((item) => {
+              return (
+                <tr>
+                  <td>{userRoles}</td>
+                  <td className="text-center"> {item.total_tanah_induk}</td>
+                  <td className="text-center"> {item.total_tanah_pinjam_pakai}</td>
+                  <td className="text-center"> {item.total_tanah_pakai_sendiri}</td>
+                  <td className="text-center"> {item.total_tanah_sewa_sip_bmd}</td>
+                  <td className="text-center">
+                    {formatter.format(item.total_rupiah_tanah_sewa_sip_bmd)}
+                  </td>
+                  <td className="text-center"> {item.total_tanah_retribusi}</td>
+                  <td className="text-center">
+                    {formatter.format(
+                      typeof item.total_rupiah_tanah_retribusi !== "undefined"
+                        ? item.total_rupiah_tanah_retribusi
+                        : item.total_rupiah_retribusi
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
+          
+          </tbody>
+          {/* <thead>
+        <tr  style={{ width:'100%' }}>
+          <th  style={{ width:'5%' }}>#</th>
+          <th  style={{ width:'20%' }}>First Name</th>
+          <th  style={{ width:'25%' }}>Last Name</th>
+          <th  style={{ width:'50%' }}>
+          <tr>
+          <th colSpan={2}>TOTAL SEWA/SIP BMD
+</th>
+          </tr>
+          <tr className="text-center">
+          <th>TANAH</th>
+          <th>RUPIAH</th>
+          </tr>
+          </th>
+        </tr>
+       
+      </thead>
+      <tbody>
+        <tr style={{ width:'100%' }}>
+          <td  style={{ width:'5%' }}>1</td>
+          <td  style={{ width:'20%' }}>Mark</td>
+          <td  style={{ width:'25%' }}>Otto</td>
+          <td  style={{ width:'25%', backgroundColor:'red' }}>
+            <span style={{ textAlign:'center', backgroundColor:'orange', paddingRight:'50px' }}>fatik</span>
+            <span style={{ textAlign:'center' }}>fatik</span>
+          </td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Jacob</td>
+          <td>Thornton</td>
+          <td>@fat</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td colSpan={2}>Larry the Bird</td>
+          <td>@twitter</td>
+        </tr>
+      </tbody> */}
+        </Table>
       </div>
     </LayoutUPT>
   );

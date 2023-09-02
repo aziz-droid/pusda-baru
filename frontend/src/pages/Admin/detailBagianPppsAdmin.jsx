@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Link, useParams } from "react-router-dom";
 import { ButtonDelete } from "../../components/Button/ButtonDelete";
-import { MapContainer, Marker, Popup, TileLayer, useMap  } from 'react-leaflet'
-import {Icon, latLng} from 'leaflet'
+import { MapContainer, Marker, TileLayer, useMap  } from 'react-leaflet'
+import {Icon} from 'leaflet'
 
 import markerIconPng from "leaflet/dist/images/marker-icon.png"
 
@@ -11,9 +11,9 @@ import LayoutAdmin from "../../components/Layout/layoutAdmin";
 // Mendefinisikan koordinat pusat peta
 const center = {
      // Bujur dari pusat peta
-     lng: 112.73635667066236,
+      lng: 112.1716087070837,
      // Lintang dari pusat peta
-     lat: -7.246854784171441,
+     lat: -7.516677410514516,
   };
 export const DetailBagianPppsAdmin = () => {
     // Mendapatkan URL backend dari variabel environment
@@ -181,13 +181,23 @@ const fetchInduk = async (token) => {
                     <div
                         className="right-form d-flex flex-col gap-3 w-100 "
                     >
-                        <div>
+                       <div>
                             <label htmlFor="koordinat">Latitude (LS BT)</label>
+                        {children.latitude  !==  "" ? (
+
                             <h5>{children.latitude}</h5>
+                        ):(
+                            <h5 className=" fw-light fst-italic">Belum Di Isi</h5>
+                        )}
                         </div>
                         <div>
                             <label htmlFor="koordinat">Longitude (LS BT)</label>
-                            <h5>{children.longitude}</h5>
+                            {children.longitude  !==  "" ? (
+
+<h5>{children.longitude}</h5>
+):(
+<h5 className=" fw-light fst-italic">Belum Di Isi</h5>
+)}
                         </div>
                         <div>
                             <label htmlFor="keterangan">Keterangan</label>
@@ -195,8 +205,11 @@ const fetchInduk = async (token) => {
                         </div>
                        
                         <div className="">
+                        <label htmlFor="koordinat">Peta Lokasi</label>
+                        {children.latitude && children.longitude !==  "" ? (
+                            <>
                             {/* menampilkan maps */}
-                        <MapContainer center={[-7.246854784171441,112.73635667066236]}  zoom={13} scrollWheelZoom={false}>
+                        <MapContainer center={[-7.246854784171441,112.73635667066236]}  zoom={8} scrollWheelZoom={false}>
                         <ChangeView center={centers} zoom={12} /> 
 
                         <TileLayer
@@ -208,6 +221,13 @@ const fetchInduk = async (token) => {
    
   </Marker>
 </MapContainer>
+</>
+) : (
+    <h5 className=" fw-light fst-italic">
+       
+    Belum Di Tentukan
+</h5>
+)}
                         </div>
                     </div>
                 </div>

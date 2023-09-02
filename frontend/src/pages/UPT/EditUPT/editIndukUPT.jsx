@@ -8,8 +8,8 @@ import Swal from "sweetalert2";
 
 // Mendefinisikan titik pusat peta
 const center = {
-  lng: 112.73635667066236,
-  lat: -7.246854784171441,
+   lng: 112.1716087070837,
+  lat: -7.516677410514516,
 };
 export const EditIndukUPT = () => {
   const apiUrl = process.env.REACT_APP_API_URL;
@@ -295,7 +295,7 @@ export const EditIndukUPT = () => {
             ></textarea>
           </div>
           <div>
-            <MapContainer center={center} zoom={13} scrollWheelZoom={false}>
+            <MapContainer center={center} zoom={8} scrollWheelZoom={false}>
             <ChangeView center={position} zoom={18} /> 
 
                         <TileLayer

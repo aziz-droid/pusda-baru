@@ -7,6 +7,20 @@ import { ButtonDelete } from "../../components/Button/ButtonDelete";
 import { TablePembayaran } from "../../components/Table/TablePembayaran";
 import ReactPaginate from "react-paginate";
 import Swal from "sweetalert2";
+import { MapContainer, Marker, TileLayer, useMap  } from 'react-leaflet'
+import {Icon} from 'leaflet'
+
+import markerIconPng from "leaflet/dist/images/marker-icon.png"
+
+
+// Mendefinisikan koordinat pusat peta
+const center = {
+    // Bujur dari pusat peta
+     lng: 112.1716087070837,
+    // Lintang dari pusat peta
+    lat: -7.516677410514516,
+  };
+
 
 export const DetailBagianSrUPT = () => {
     const backendUrl = process.env.REACT_APP_BACKEND_URL;
@@ -56,6 +70,11 @@ export const DetailBagianSrUPT = () => {
     const [startingPoint, setStartingPoint] = useState(0);
     const [emptyMsg, setEmptyMsg] = useState("");
     const [paymentEdit, setPaymentEdit] = useState({});
+    const [centers, setCenters] = useState(center)
+    // Mendefinisikan state untuk menyimpan latitude
+    const [latitude, setLatitude] = useState("");
+    // Mendefinisikan state untuk menyimpan longitude
+    const [longitude, setLongitude] = useState("");
 
     const [triggerDeleted, setTriggerDeleted] = useState(false);
 
@@ -77,13 +96,22 @@ export const DetailBagianSrUPT = () => {
 
                 let resJson = await res.json();
 
-                if (res.status != 200) {
+                if (res.status !== 200) {
                     return console.log(resJson.message);
                 }
 
                 let resData = resJson.data;
 
                 setChildren(resData);
+                setLatitude(resData?.latitude);
+                setLongitude(resData?.longitude);
+        
+               let center = {
+                    lng: resData.longitude,
+                        lat: resData.latitude
+                }
+               
+                setCenters(center)
             } catch (error) {
                 console.log(error);
             }
@@ -108,7 +136,7 @@ export const DetailBagianSrUPT = () => {
 
                 let resJson = await res.json();
 
-                if (res.status != 200) {
+                if (res.status !== 200) {
                     return console.log(resJson.message);
                 }
 
@@ -134,6 +162,68 @@ export const DetailBagianSrUPT = () => {
         fetchPayment().catch(console.error);
     }, [triggerDeleted, pageNum]);
 
+    // Fungsi untuk mengimpor detail pembayaran admin
+    const importDetailPaymentAdmin = () => {
+        Swal.fire({
+            title: "Import Data",
+            text: "Upload file excel",
+            input: "file",
+            inputAttributes: {
+                accept: ".xls,.xlsx,.csv, .xlx",
+                "aria-label": "Upload your file",
+                name: "file",
+            },
+            showCancelButton: true,
+            confirmButtonText: "Upload",
+            showLoaderOnConfirm: true,
+            preConfirm: (file) => {
+                let token = localStorage.getItem("token");
+                let formData = new FormData();
+                formData.append("file", file);
+                formData.append("token", token);
+                console.log({formData})
+                console.log("id", children.id)
+                return fetch(apiUrl + "import/file/payment/" + children.id, {
+                    method: "POST",
+                    body: formData,
+                }).then((response) => {
+                    if (!response.ok) {
+                        throw new Error(response.statusText);
+                    }
+                    return response.json();
+                }).catch((error) => {
+                    Swal.showValidationMessage(`Request failed: ${error}`);
+                });
+            },
+            allowOutsideClick: () => !Swal.isLoading(),
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire({
+                    title: "Success!",
+                    text: "Data berhasil diimport",
+                    icon: "success",
+                });
+
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000);
+            } else {
+                Swal.fire({
+                    title: "Error!",
+                    text: "Data gagal diimport",
+                    icon: "error",
+                });
+            }
+        });
+    };
+    // Fungsi untuk mengubah tampilan peta
+    function ChangeView({ center, zoom }) {
+        const map = useMap();
+        map.setView(center, zoom);
+        return null;
+      }
+
+    // Mengembalikan komponen yang akan ditampilkan
     return (
         <LayoutUPT>
             <ModalPembayaran
@@ -202,10 +292,10 @@ export const DetailBagianSrUPT = () => {
                     Informasi Tanah Bagian
                 </h5>
                 <div className="d-flex informasi-tanah-bagian gap-5 justify-content-between">
-                    <div className="left-form d-flex flex-col gap-3 ">
+                <div className="left-form d-flex flex-col gap-3 w-100 ">
                         <div>
                             <label htmlFor="nilai-sewa">
-                                Jenis Perikatan Pemanfaatan
+                                Jenis Perikatan Pemanfaatans
                             </label>
                             <h5>
                                 {mapType(children.utilization_engagement_type)}
@@ -222,9 +312,54 @@ export const DetailBagianSrUPT = () => {
                             <h5>{children.allotment_of_use}</h5>
                         </div>
                         <div>
-                            <label htmlFor="koordinat">Koordinat (LS BT)</label>
-                            <h5>{children.coordinate}</h5>
+                            <label htmlFor="koordinat">Latitude (LS BT)</label>
+                        {children.latitude  !==  "" ? (
+
+                            <h5>{children.latitude}</h5>
+                        ):(
+                            <h5 className=" fw-light fst-italic">Belum Di Isi</h5>
+                        )}
                         </div>
+                        <div>
+                            <label htmlFor="koordinat">Longitude (LS BT)</label>
+                            {children.longitude  !==  "" ? (
+
+<h5>{children.longitude}</h5>
+):(
+<h5 className=" fw-light fst-italic">Belum Di Isi</h5>
+)}
+                        </div>
+                        <div>
+                        <label htmlFor="koordinat">Peta Lokasi</label>
+
+                        {children.latitude && children.longitude !==  "" ? (
+                            <>
+{/* {console.log('ini children',children)} */}
+                        <MapContainer center={[-7.246854784171441,112.73635667066236]}  zoom={8} scrollWheelZoom={false}>
+                        <ChangeView center={centers} zoom={12} /> 
+
+                        <TileLayer
+              attribution="&copy; OpenStreetMap"
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+  <Marker position={[latitude, longitude]} icon={new Icon({iconUrl: markerIconPng, iconSize: [25, 41], iconAnchor: [12, 41]})}>
+   
+  </Marker>
+</MapContainer>
+</>
+                        ) : (
+                            <h5 className=" fw-light fst-italic">
+                               
+                            Belum Di Tentukan
+                    </h5>
+                        )}
+                        </div>
+                       
+                    </div>
+                    <div
+                        className="right-form d-flex flex-col gap-3 w-100"
+                        style={{ paddingRight: "100px" }}
+                    >
                         <div>
                             <label htmlFor="luas-bagian">Luas Induk (m)</label>
                             <h5>{children.large}</h5>
@@ -237,11 +372,6 @@ export const DetailBagianSrUPT = () => {
                                 {formatter.format(children.rental_retribution)}
                             </h5>
                         </div>
-                    </div>
-                    <div
-                        className="right-form d-flex flex-col gap-3"
-                        style={{ paddingRight: "100px" }}
-                    >
                         <div>
                             <label htmlFor="nomor-perikatan">
                                 Masa Berlaku
@@ -267,31 +397,48 @@ export const DetailBagianSrUPT = () => {
                             <label className="font-semibold">
                                 Surat Perjanjian
                             </label>
+                            {children.agreement_letter !== 'null' ? (
                             <h5 className="filename">
                                 <a
                                     href={
-                                        backendUrl + children.agreement_letter
+                                        backendUrl + `agreementletter/` + children.agreement_letter
                                     }
-                                    target="_blank"
+                                    target="_blank" rel="noreferrer"
                                 >
                                     SURAT PERJANJIAN-1.PDF
                                 </a>
                             </h5>
+                            ) : 
+                            (
+                                <h5 className=" fw-light fst-italic">
+                               
+                                    Belum Di Upload
+                            </h5>
+                            )}
                         </div>
                         <div className="d-flex flex-col">
                             <label className="font-semibold">
                                 Surat Permohonan
                             </label>
+                            {children.application_letter !== 'null' ? (
+
                             <h5 className="filename">
                                 <a
                                     href={
-                                        backendUrl + children.application_letter
+                                        backendUrl + `applicationletter/` + children.application_letter
                                     }
-                                    target="_blank"
+                                    target="_blank" rel="noreferrer"
                                 >
                                     SURAT PERMOHONAN-1.PDF
                                 </a>
                             </h5>
+                             ) : 
+                             (
+                                 <h5 className=" fw-light fst-italic">
+                                
+                                     Belum Di Upload
+                             </h5>
+                             )}
                         </div>
                     </div>
                 </div>
@@ -308,6 +455,13 @@ export const DetailBagianSrUPT = () => {
                     >
                         <h5>Informasi Pembayaran</h5>
                         <div className="d-flex">
+                        <div
+                                onClick={importDetailPaymentAdmin}
+                                className="secondary-btn d-flex align-items-center me-2"
+                                style={{ padding: "0 15px" }}
+                            >
+                                Import
+                            </div>
                             <div
                                 to="/upt/tambah"
                                 className="primary-btn d-flex justify-content-center align-items-center"

@@ -38,6 +38,8 @@ class IndukImport implements ToModel,WithHeadingRow
             'certificate_number' => $row['nomor_sertifikat'],
             'certificate_date'=> \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($row['tanggal_sertifikat']),
             'asset_value'=> $row['nilai_aset'],
+            'latitude'=> $row['garis_lintang'] ? $row['garis_lintang'] : null ,
+            'longitude'=> $row['garis_bujur'] ? $row['garis_bujur'] : null,
             'upt' => $this->upt
         ]);
     }

@@ -15,8 +15,9 @@ import Swal from "sweetalert2";
 
     // Mendefinisikan koordinat pusat peta
     const center = {
-        lng: 112.73635667066236,
-        lat: -7.246854784171441,
+        lng: 112.1716087070837,
+        lat: -7.516677410514516,
+        
     };
     // Fungsi utama komponen TambahIndukAdmin
     export const TambahIndukAdmin = () => {
@@ -295,7 +296,7 @@ import Swal from "sweetalert2";
                             ></textarea>
                         </div>
                         <div>
-                            <MapContainer center={center} zoom={13} scrollWheelZoom={false}>
+                            <MapContainer center={center} zoom={8} scrollWheelZoom={false}>
                                 <TileLayer
                                     attribution="&copy; OpenStreetMap"
                                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

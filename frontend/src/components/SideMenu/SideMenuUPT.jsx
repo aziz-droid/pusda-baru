@@ -8,7 +8,7 @@ export const SideMenuUPT = () => {
   const userSlug = localStorage.getItem('user_slug');
 
     return (
-      <div className="side-menu border">
+      <div className="side-menu h-100 " id="sticky-sidebar">
         <Link
           to="/dashboard/upt"
           className="side-menu-header d-flex justify-content-center"

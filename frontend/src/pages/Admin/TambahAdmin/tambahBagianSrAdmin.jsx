@@ -11,8 +11,8 @@ import Swal from "sweetalert2";
 
 // Mendefinisikan koordinat pusat peta
 const center = {
-  lng: 112.73635667066236,
-  lat: -7.246854784171441,
+   lng: 112.1716087070837,
+  lat: -7.516677410514516,
 };
 
 // Mendefinisikan komponen TambahBagianSrAdmin
@@ -77,7 +77,7 @@ export const TambahBagianSrAdmin = () => {
       let resJson = await res.json();
 
       // Jika status response bukan 201, menampilkan pesan error
-      if (res.status != 201) {
+      if (res.status !== 201) {
         let message = resJson.message;
         if (!Array.isArray(message)) message = [resJson.message];
 
@@ -438,7 +438,7 @@ export const TambahBagianSrAdmin = () => {
               />
             </div> */}
               <div>
-            <MapContainer center={center} zoom={13} scrollWheelZoom={false}>
+            <MapContainer center={center} zoom={8} scrollWheelZoom={false}>
                         <TileLayer
               attribution="&copy; OpenStreetMap"
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
