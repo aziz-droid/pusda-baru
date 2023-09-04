@@ -48,13 +48,13 @@ class AnakImport implements ToModel, WithHeadingRow
             'validity_period_until'  => $row['masa_berlaku_sampai'],
             'engagement_date'  => $row['tanggal_perikatan'],
             'engagement_number'  => $row['nomor_perikatan'],
-            'coordinate'  => $row['koordinat'],
+            // 'coordinate'  => $row['koordinat'],
             'present_condition'  => $row['kondisi_sekarang'] ?? NULL,
             'description'  => $row['keterangan'],
             'application_letter' => 'null',
             'agreement_letter' => 'null',
-            'latitude'=> $row['garis_lintang'] ? $row['garis_lintang'] : null ,
-            'longitude'=> $row['garis_bujur'] ? $row['garis_bujur'] : null,
+            'latitude'=> $row['latitude'] ? $row['latitude'] : null ,
+            'longitude'=> $row['longitude'] ? $row['longitude'] : null,
         ]);
         // } else {
         // $children = new Childer([

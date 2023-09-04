@@ -294,7 +294,7 @@ export const DetailIndukUPT = ({ induk_id }) => {
               </div>
               <div className="">
                 <label htmlFor="koordinat">Peta Lokasi</label>
-                {children.latitude && children.longitude !== "" ? (
+                {induk.latitude && induk.longitude !== null ? (
                   <>
                     <MapContainer
                       center={[-7.246854784171441, 112.73635667066236]}
