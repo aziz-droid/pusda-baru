@@ -28,7 +28,7 @@ export const SideMenuAdmin  = ({
           to="/dashboard/admin"
           className="side-menu-header d-flex justify-content-center"
         >
-          <img className="w-75 p-4" src="/simamat/logo.png" alt="logo" />
+          <img className="w-75 p-4" src="/logo.png" alt="logo" />
         </Link>
           {/* </Offcanvas.Title>
         </Offcanvas.Header> */}
@@ -36,7 +36,7 @@ export const SideMenuAdmin  = ({
           to="/dashboard/admin"
           className="side-menu-header d-flex justify-content-center"
         >
-          <img className="w-75 p-4" src="/simamat/logo.png" alt="logo" />
+          <img className="w-75 p-4" src="/logo.png" alt="logo" />
         </Link> */}
          {/* <Offcanvas.Body> */}
           
