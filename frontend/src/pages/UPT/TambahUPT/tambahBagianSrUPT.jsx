@@ -1,8 +1,19 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import LayoutUPT from "../../../components/Layout/layoutUPT";
-
 import Swal from "sweetalert2";
+
+import { MapContainer, Marker, Popup, TileLayer, useMap } from "react-leaflet";
+import { Icon } from "leaflet";
+import markerIconPng from "leaflet/dist/images/marker-icon.png";
+
+// Mengimpor modul untuk menampilkan popup
+
+// Mendefinisikan koordinat pusat peta
+const center = {
+  lng: 112.1716087070837,
+  lat: -7.516677410514516,
+};
 
 export const TambahBagianSrUPT = () => {
   const apiUrl = process.env.REACT_APP_API_URL;
@@ -17,6 +28,8 @@ export const TambahBagianSrUPT = () => {
     utilization_engagement_name: "",
     allotment_of_use: "",
     coordinate: "",
+    latitude: "",
+    longitude: "",
     large: "",
     validity_period_of: "",
     validity_period_until: "",
@@ -162,6 +175,45 @@ export const TambahBagianSrUPT = () => {
     statusRef2.current.innerHTML = "upload aborted!!";
   };
 
+  // Mendefinisikan ref untuk marker
+  const markerRef = useRef(null);
+
+  // Mendefinisikan state untuk posisi marker
+  const [position, setPosition] = useState(center);
+  // Mendefinisikan state untuk latitude
+  const [latitude, setLatitude] = useState("");
+  // Mendefinisikan state untuk longitude
+  const [longitude, setLongitude] = useState("");
+
+  // Mendefinisikan event handler untuk marker
+  const eventHandlers = useMemo(
+    () => ({
+      // Fungsi untuk menangani event dragend
+      dragend() {
+        // Mendapatkan marker
+        const marker = markerRef.current;
+        // Jika marker ada
+        if (marker != null) {
+          // Mengubah posisi marker
+          setPosition(marker.getLatLng());
+
+          // Mengubah latitude
+          setLatitude(marker.getLatLng().lat);
+          // Mengubah longitude
+          setLongitude(marker.getLatLng().lng);
+
+          // Mengubah state children
+          setChildren({
+            ...children,
+            latitude: marker.getLatLng().lat,
+            longitude: marker.getLatLng().lng,
+          });
+        }
+      },
+    }),
+    // Dependensi useMemo
+    [latitude, longitude, children]
+  );
   return (
     <LayoutUPT>
       <div
@@ -216,8 +268,8 @@ export const TambahBagianSrUPT = () => {
                     })}
                 </div> */}
 
-        <form className="d-flex form-tambah-tanah gap-5">
-          <div className="left-form d-flex flex-col gap-3">
+        <form className="d-flex form-tambah-tanah gap-5 mb-4">
+          <div className="left-form d-flex flex-col gap-3 w-100">
             <div>
               <label htmlFor="sertifikat-jenispemanfaatan">
                 Jenis Perikatan
@@ -292,21 +344,62 @@ export const TambahBagianSrUPT = () => {
               />
             </div>
             <div>
-              <label htmlFor="koordinat">Koordinat (LS BT)</label>
+              <MapContainer center={center} zoom={8} scrollWheelZoom={false}>
+                <TileLayer
+                  attribution="&copy; OpenStreetMap"
+                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                />
+                <Marker
+                  draggable
+                  eventHandlers={eventHandlers}
+                  position={position}
+                  ref={markerRef}
+                  icon={
+                    new Icon({
+                      iconUrl: markerIconPng,
+                      iconSize: [25, 41],
+                      iconAnchor: [12, 41],
+                    })
+                  }
+                ></Marker>
+              </MapContainer>
+            </div>
+            <div>
+              <label htmlFor="latitude">Latitude</label>
               <input
-                type="text"
+                disabled
+                type="number"
                 className="w-100"
-                name="koordinat"
-                placeholder="Masukkan koordinat"
-                value={children.coordinate}
+                name="latitude"
+                placeholder="Masukkan latitude"
+                value={children.latitude}
                 onChange={(e) =>
                   setChildren({
                     ...children,
-                    coordinate: e.target.value,
+                    latitude: e.target.value,
                   })
                 }
               />
             </div>
+            <div>
+              <label htmlFor="longitude">Longitude</label>
+              <input
+                disabled
+                type="number"
+                className="w-100"
+                name="longitude"
+                placeholder="Masukkan longitude"
+                value={children.longitude}
+                onChange={(e) =>
+                  setChildren({
+                    ...children,
+                    longitude: e.target.value,
+                  })
+                }
+              />
+            </div>
+          </div>
+          <div className="right-form d-flex flex-col gap-3 w-100">
             <div>
               <label htmlFor="luas-bagian">Luas Bagian</label>
               <input
@@ -362,8 +455,6 @@ export const TambahBagianSrUPT = () => {
                 }
               />
             </div>
-          </div>
-          <div className="right-form d-flex flex-col gap-3">
             <div>
               <label htmlFor="nomor-perikatan">Nomor Perikatan</label>
               <input
@@ -427,6 +518,7 @@ export const TambahBagianSrUPT = () => {
               </label>
               <input
                 type="file"
+                accept="application/pdf"
                 className="d-none"
                 id="surat-perjanjian"
                 ref={uploadRef}
@@ -457,6 +549,7 @@ export const TambahBagianSrUPT = () => {
               </label>
               <input
                 type="file"
+                accept="application/pdf"
                 className="d-none"
                 ref={uploadRef2}
                 id="surat-permohonan"

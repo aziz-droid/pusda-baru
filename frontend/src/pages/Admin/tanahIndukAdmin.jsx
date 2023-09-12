@@ -101,6 +101,7 @@ export const TanahIndukAdmin = () => {
 
             setEmptyMsg("");
             setData(resData);
+            // console.log("resdata", resData)
         } catch (error) {
             console.log(error);
             window.location = '/'
