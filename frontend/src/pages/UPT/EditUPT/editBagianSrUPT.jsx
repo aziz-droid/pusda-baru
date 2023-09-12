@@ -1,8 +1,16 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import LayoutUPT from "../../../components/Layout/layoutUPT";
+import { MapContainer, Marker, Popup, TileLayer, useMap } from "react-leaflet";
+import { Icon } from "leaflet";
+import markerIconPng from "leaflet/dist/images/marker-icon.png";
 
 import Swal from "sweetalert2";
+
+const center = {
+  lng: 112.1716087070837,
+  lat: -7.516677410514516,
+};
 
 export const EditBagianSrUPT = () => {
   const apiUrl = process.env.REACT_APP_API_URL;
@@ -17,6 +25,8 @@ export const EditBagianSrUPT = () => {
     utilization_engagement_name: "",
     allotment_of_use: "",
     coordinate: "",
+    longitude: "",
+    latitude: "",
     large: "",
     validity_period_of: "",
     validity_period_until: "",
@@ -28,7 +38,9 @@ export const EditBagianSrUPT = () => {
   });
 
   const [message, setMessage] = useState([]);
-
+  const [position, setPosition] = useState(center);
+  const [latitude, setLatitude] = useState("");
+  const [longitude, setLongitude] = useState("");
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -199,6 +211,34 @@ export const EditBagianSrUPT = () => {
     fetchInduk().catch(console.error);
   }, []);
 
+  const markerRef = useRef(null);
+
+  const eventHandlers = useMemo(
+    () => ({
+      dragend() {
+        const marker = markerRef.current;
+        if (marker != null) {
+          setPosition(marker.getLatLng());
+
+          setLatitude(marker.getLatLng().lat);
+          setLongitude(marker.getLatLng().lng);
+
+          setChildren({
+            ...children,
+            latitude: marker.getLatLng().lat,
+            longitude: marker.getLatLng().lng,
+          });
+        }
+      },
+    }),
+    [latitude, longitude, children]
+  );
+
+  function ChangeView({ center, zoom }) {
+    const map = useMap();
+    map.setView(center, zoom);
+    return null;
+  }
   return (
     <LayoutUPT>
       <div
@@ -253,7 +293,7 @@ export const EditBagianSrUPT = () => {
                 </div> */}
 
         <form className="d-flex form-tambah-tanah gap-5">
-          <div className="left-form d-flex flex-col gap-3">
+          <div className="left-form d-flex flex-col gap-3 w-100">
             <div>
               <label htmlFor="sertifikat-jenispemanfaatan">
                 Jenis Perikatan
@@ -325,20 +365,62 @@ export const EditBagianSrUPT = () => {
               />
             </div>
             <div>
-              <label htmlFor="koordinat">Koordinat (LS BT)</label>
+              <MapContainer center={center} zoom={8} scrollWheelZoom={false}>
+                <ChangeView center={position} zoom={12} />
+
+                <TileLayer
+                  attribution="&copy; OpenStreetMap"
+                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                />
+                <Marker
+                  draggable
+                  eventHandlers={eventHandlers}
+                  position={position}
+                  ref={markerRef}
+                  icon={
+                    new Icon({
+                      iconUrl: markerIconPng,
+                      iconSize: [25, 41],
+                      iconAnchor: [12, 41],
+                    })
+                  }
+                ></Marker>
+              </MapContainer>
+            </div>
+            <div>
+              <label htmlFor="latitude">Latitude (LS BT)</label>
               <input
+                disabled
                 type="text"
                 className="w-100"
-                name="koordinat"
-                value={children.coordinate}
+                name="latitude"
+                value={children.latitude}
                 onChange={(e) =>
                   setChildren({
                     ...children,
-                    coordinate: e.target.value,
+                    latitude: e.target.value,
                   })
                 }
               />
             </div>
+            <div>
+              <label htmlFor="longitude">longitude (LS BT)</label>
+              <input
+                disabled
+                type="text"
+                className="w-100"
+                name="longitude"
+                value={children.longitude}
+                onChange={(e) =>
+                  setChildren({
+                    ...children,
+                    longitude: e.target.value,
+                  })
+                }
+              />
+            </div>
+          </div>
+          <div className="right-form d-flex flex-col gap-3 w-100">
             <div>
               <label htmlFor="luas-bagian">Luas Bagian</label>
               <input
@@ -393,8 +475,6 @@ export const EditBagianSrUPT = () => {
                 }
               />
             </div>
-          </div>
-          <div className="right-form d-flex flex-col gap-3">
             <div>
               <label htmlFor="nomor-perikatan">Nomor Perikatan</label>
               <input
