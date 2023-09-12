@@ -103,12 +103,12 @@ export const DetailIndukUPT = ({ induk_id }) => {
       try {
         let res = await fetch(
           apiUrl +
-            "childer/all?page=" +
-            pageNum +
-            "&parent_id=" +
-            params.induk_id +
-            "&keyword=" +
-            search,
+          "childer/all?page=" +
+          pageNum +
+          "&parent_id=" +
+          params.induk_id +
+          "&keyword=" +
+          search,
           {
             method: "GET",
             headers: {
@@ -132,7 +132,7 @@ export const DetailIndukUPT = ({ induk_id }) => {
           setPageCount(resJson.data.last_page);
           setStartingPoint(
             resJson.data.per_page * resJson.data.current_page -
-              (resJson.data.per_page - 1)
+            (resJson.data.per_page - 1)
           );
         }
 
@@ -298,10 +298,10 @@ export const DetailIndukUPT = ({ induk_id }) => {
                   <>
                     <MapContainer
                       center={[-7.246854784171441, 112.73635667066236]}
-                      zoom={8}
+                      zoom={50}
                       scrollWheelZoom={false}
                     >
-                      <ChangeView center={centers} zoom={16} />
+                      <ChangeView center={centers} zoom={12} />
 
                       <TileLayer
                         attribution="&copy; OpenStreetMap"

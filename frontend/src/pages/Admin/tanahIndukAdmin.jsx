@@ -51,7 +51,7 @@ export const TanahIndukAdmin = () => {
         luas: "",
     });
 
-    
+
     const fetchData = async () => {
 
         let token = localStorage.getItem("token");
@@ -149,7 +149,7 @@ export const TanahIndukAdmin = () => {
                 let formData = new FormData();
                 formData.append("file", file);
                 formData.append("token", token);
-                console.log(formData.get(file)  )
+                console.log(formData.get(file))
 
                 return fetch(apiUrl + `import/file/${params.id}/parent/${authorId}`, {
                     method: "POST",
@@ -175,13 +175,14 @@ export const TanahIndukAdmin = () => {
                 setTimeout(() => {
                     window.location.reload();
                 }, 2000);
-            } else {
-                Swal.fire({
-                    title: "Error!",
-                    text: "Data gagal diimport",
-                    icon: "error",
-                });
             }
+            // else {
+            //     Swal.fire({
+            //         title: "Error!",
+            //         text: "Data gagal diimport",
+            //         icon: "error",
+            //     });
+            // }
         });
     };
 
@@ -221,8 +222,8 @@ export const TanahIndukAdmin = () => {
                             {emptyMsg == "" ? (
                                 <>
                                     {data.map((item, key) => {
-                                        if(key+1 === data.length){
-                                            setTimeout(()=>Swal.close(), 500)
+                                        if (key + 1 === data.length) {
+                                            setTimeout(() => Swal.close(), 500)
                                         }
                                         return (
                                             <IndukTableRowAdmin

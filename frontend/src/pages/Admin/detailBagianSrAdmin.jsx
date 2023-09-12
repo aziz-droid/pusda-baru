@@ -7,8 +7,8 @@ import { ButtonDelete } from "../../components/Button/ButtonDelete";
 import { TablePembayaran } from "../../components/Table/TablePembayaran";
 import ReactPaginate from "react-paginate";
 import Swal from "sweetalert2";
-import { MapContainer, Marker, TileLayer, useMap  } from 'react-leaflet'
-import {Icon} from 'leaflet'
+import { MapContainer, Marker, TileLayer, useMap } from 'react-leaflet'
+import { Icon } from 'leaflet'
 
 import markerIconPng from "leaflet/dist/images/marker-icon.png"
 
@@ -16,16 +16,16 @@ import markerIconPng from "leaflet/dist/images/marker-icon.png"
 // Mendefinisikan koordinat pusat peta
 const center = {
     // Bujur dari pusat peta
-     lng: 112.1716087070837,
+    lng: 112.1716087070837,
     // Lintang dari pusat peta
     lat: -7.516677410514516,
-  };
+};
 
 // Mendefinisikan komponen DetailBagianSrAdmin
 export const DetailBagianSrAdmin = () => {
     // Mendapatkan URL backend dari variabel environment
     const backendUrl = process.env.REACT_APP_BACKEND_URL;
-   
+
     // Mendapatkan URL API dari variabel environment
     const apiUrl = process.env.REACT_APP_API_URL;
     // Mendefinisikan fungsi navigasi
@@ -130,12 +130,12 @@ export const DetailBagianSrAdmin = () => {
                 setChildren(resData);
                 setLatitude(resData?.latitude);
                 setLongitude(resData?.longitude);
-        
-               let center = {
+
+                let center = {
                     lng: resData.longitude,
-                        lat: resData.latitude
+                    lat: resData.latitude
                 }
-               
+
                 setCenters(center)
             } catch (error) {
                 console.log(error);
@@ -147,10 +147,10 @@ export const DetailBagianSrAdmin = () => {
             try {
                 let res = await fetch(
                     apiUrl +
-                        "payment/all?page=" +
-                        pageNum +
-                        "&childrens_id=" +
-                        params.children_id,
+                    "payment/all?page=" +
+                    pageNum +
+                    "&childrens_id=" +
+                    params.children_id,
                     {
                         method: "GET",
                         headers: {
@@ -169,7 +169,7 @@ export const DetailBagianSrAdmin = () => {
                 setPageCount(resJson.data.last_page);
                 setStartingPoint(
                     resJson.data.per_page * resJson.data.current_page -
-                        (resJson.data.per_page - 1)
+                    (resJson.data.per_page - 1)
                 );
 
                 let resData = resJson.data.data;
@@ -208,7 +208,7 @@ export const DetailBagianSrAdmin = () => {
                 let formData = new FormData();
                 formData.append("file", file);
                 formData.append("token", token);
-                console.log({formData})
+                console.log({ formData })
                 console.log("id", children.id)
                 return fetch(apiUrl + "import/file/payment/" + children.id, {
                     method: "POST",
@@ -248,9 +248,9 @@ export const DetailBagianSrAdmin = () => {
         const map = useMap();
         map.setView(center, zoom);
         return null;
-      }
+    }
     // Mengembalikan komponen yang akan ditampilkan
-   
+
     return (
         <LayoutAdmin>
             {/* component modal untuk tambah data pembayaran */}
@@ -342,48 +342,48 @@ export const DetailBagianSrAdmin = () => {
                         </div>
                         <div>
                             <label htmlFor="koordinat">Latitude (LS BT)</label>
-                        {children.latitude  !==  "" ? (
+                            {children.latitude !== "" ? (
 
-                            <h5>{children.latitude}</h5>
-                        ):(
-                            <h5 className=" fw-light fst-italic">Belum Di Isi</h5>
-                        )}
+                                <h5>{children.latitude}</h5>
+                            ) : (
+                                <h5 className=" fw-light fst-italic">Belum Di Isi</h5>
+                            )}
                         </div>
                         <div>
                             <label htmlFor="koordinat">Longitude (LS BT)</label>
-                            {children.longitude  !==  "" ? (
+                            {children.longitude !== "" ? (
 
-<h5>{children.longitude}</h5>
-):(
-<h5 className=" fw-light fst-italic">Belum Di Isi</h5>
-)}
+                                <h5>{children.longitude}</h5>
+                            ) : (
+                                <h5 className=" fw-light fst-italic">Belum Di Isi</h5>
+                            )}
                         </div>
                         <div>
-                        <label htmlFor="koordinat">Peta Lokasi</label>
+                            <label htmlFor="koordinat">Peta Lokasi</label>
 
-                        {children.latitude && children.longitude !==  "" ? (
-                            <>
-{/* {console.log('ini children',children)} */}
-                        <MapContainer center={[-7.246854784171441,112.73635667066236]}  zoom={8} scrollWheelZoom={false}>
-                        <ChangeView center={centers} zoom={12} /> 
+                            {children.latitude && children.longitude !== "" ? (
+                                <>
+                                    {/* {console.log('ini children',children)} */}
+                                    <MapContainer center={[-7.246854784171441, 112.73635667066236]} zoom={8} scrollWheelZoom={false}>
+                                        <ChangeView center={centers} zoom={16} />
 
-                        <TileLayer
-              attribution="&copy; OpenStreetMap"
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            />
-  <Marker position={[latitude, longitude]} icon={new Icon({iconUrl: markerIconPng, iconSize: [25, 41], iconAnchor: [12, 41]})}>
-   
-  </Marker>
-</MapContainer>
-</>
-                        ) : (
-                            <h5 className=" fw-light fst-italic">
-                               
-                            Belum Di Tentukan
-                    </h5>
-                        )}
+                                        <TileLayer
+                                            attribution="&copy; OpenStreetMap"
+                                            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                                        />
+                                        <Marker position={[latitude, longitude]} icon={new Icon({ iconUrl: markerIconPng, iconSize: [25, 41], iconAnchor: [12, 41] })}>
+
+                                        </Marker>
+                                    </MapContainer>
+                                </>
+                            ) : (
+                                <h5 className=" fw-light fst-italic">
+
+                                    Belum Di Tentukan
+                                </h5>
+                            )}
                         </div>
-                       
+
                     </div>
                     <div
                         className="right-form d-flex flex-col gap-3 w-100"
@@ -427,23 +427,23 @@ export const DetailBagianSrAdmin = () => {
                                 Surat Perjanjian
                             </label>
                             {children.agreement_letter !== 'null' ? (
-                            <h5 className="filename">
-                                <a
-                                    href={
-                                        backendUrl + `agreementletter/` + children.agreement_letter
-                                    }
-                                    target="_blank" rel="noreferrer"
-                                >
-                                    SURAT PERJANJIAN-1.PDF
-                                </a>
-                            </h5>
-                            ) : 
-                            (
-                                <h5 className=" fw-light fst-italic">
-                               
-                                    Belum Di Upload
-                            </h5>
-                            )}
+                                <h5 className="filename">
+                                    <a
+                                        href={
+                                            backendUrl + `agreementletter/` + children.agreement_letter
+                                        }
+                                        target="_blank" rel="noreferrer"
+                                    >
+                                        SURAT PERJANJIAN-1.PDF
+                                    </a>
+                                </h5>
+                            ) :
+                                (
+                                    <h5 className=" fw-light fst-italic">
+
+                                        Belum Di Upload
+                                    </h5>
+                                )}
                         </div>
                         <div className="d-flex flex-col">
                             <label className="font-semibold">
@@ -451,23 +451,23 @@ export const DetailBagianSrAdmin = () => {
                             </label>
                             {children.application_letter !== 'null' ? (
 
-                            <h5 className="filename">
-                                <a
-                                    href={
-                                        backendUrl + `applicationletter/` + children.application_letter
-                                    }
-                                    target="_blank" rel="noreferrer"
-                                >
-                                    SURAT PERMOHONAN-1.PDF
-                                </a>
-                            </h5>
-                             ) : 
-                             (
-                                 <h5 className=" fw-light fst-italic">
-                                
-                                     Belum Di Upload
-                             </h5>
-                             )}
+                                <h5 className="filename">
+                                    <a
+                                        href={
+                                            backendUrl + `applicationletter/` + children.application_letter
+                                        }
+                                        target="_blank" rel="noreferrer"
+                                    >
+                                        SURAT PERMOHONAN-1.PDF
+                                    </a>
+                                </h5>
+                            ) :
+                                (
+                                    <h5 className=" fw-light fst-italic">
+
+                                        Belum Di Upload
+                                    </h5>
+                                )}
                         </div>
                     </div>
                 </div>
@@ -484,7 +484,7 @@ export const DetailBagianSrAdmin = () => {
                     >
                         <h5>Informasi Pembayaran</h5>
                         <div className="d-flex">
-                        <div
+                            <div
                                 onClick={importDetailPaymentAdmin}
                                 className="secondary-btn d-flex align-items-center me-2"
                                 style={{ padding: "0 15px" }}

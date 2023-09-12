@@ -219,36 +219,36 @@ export const DashboardAdmin = () => {
                 </tr>
               );
             })}
-             {dataKeseluruhan.map((itemTotal) => {
-          return (
-            <tr>
-              <td>Total Keseluruhan</td>
-              <td className="text-center">
-              {itemTotal.total_tanah}
-              </td>
-              <td className="text-center">
-              {itemTotal.total_tanah_pinjam_pakai}
+            {dataKeseluruhan.map((itemTotal) => {
+              return (
+                <tr>
+                  <td>Total Keseluruhan</td>
+                  <td className="text-center">
+                    {itemTotal.total_tanah}
+                  </td>
+                  <td className="text-center">
+                    {itemTotal.total_tanah_pinjam_pakai}
 
-              </td>
-              <td className="text-center">
-              {itemTotal.total_tanah_pakai_sendiri}
-              </td>
-              <td className="text-center">
-              {itemTotal.total_tanah_sewa}
-              </td>
-              <td className="text-center">
-              {formatter.format(itemTotal.total_rupiah_sewa)}
-              </td>
-              <td className="text-center">
-              {itemTotal.total_tanah_retribusi}
-              </td>
-              <td className="text-center">
-              {formatter.format(itemTotal.total_rupiah_retribusi)}
+                  </td>
+                  <td className="text-center">
+                    {itemTotal.total_tanah_pakai_sendiri}
+                  </td>
+                  <td className="text-center">
+                    {itemTotal.total_tanah_sewa}
+                  </td>
+                  <td className="text-center">
+                    {formatter.format(itemTotal.total_rupiah_sewa)}
+                  </td>
+                  <td className="text-center">
+                    {itemTotal.total_tanah_retribusi}
+                  </td>
+                  <td className="text-center">
+                    {formatter.format(itemTotal.total_rupiah_retribusi)}
 
-              </td>
-            </tr>
-            );
-          })}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
           {/* <thead>
         <tr  style={{ width:'100%' }}>
@@ -342,7 +342,7 @@ export const DashboardAdmin = () => {
             </>
           )}
         </div> */}
-       
+
       </div>
     </LayoutAdmin>
   );

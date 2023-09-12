@@ -40,7 +40,7 @@ class AnakImport implements ToModel, WithHeadingRow
         Childer::create([
             'parent_id' => $induk->id ?? NULL,
             'utilization_engagement_type' => $row['jenis_pemanfaatan'],
-            'utilization_engagement_name' => $row['nama_pemanfaatan'],
+            'utilization_engagement_name' => $row['atas_nama'],
             'allotment_of_use'  => $row['peruntukan_penggunaan'],
             'large'  => $row['luas'],
             'rental_retribution' => $row['nilai_sewa_retribusi'],

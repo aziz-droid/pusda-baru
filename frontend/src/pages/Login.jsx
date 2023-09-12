@@ -30,9 +30,6 @@ export const Login = () => {
                 // }
 
                 if (res.status === 422) {
-                   
-
-
                 } else {
                     // Check roles
                     localStorage.setItem('user_id', resJson.user.id);
@@ -75,7 +72,7 @@ export const Login = () => {
             {/* pict */}
             <div className="hero-picture">
                 <div className="bg-cyanblue">
-                    <img src="/pusda.jpeg" alt="home cover" style={{ objectFit:'cover' }} />
+                    <img src="/pusda.jpeg" alt="home cover" style={{ objectFit: 'cover' }} />
                 </div>
             </div>
 
@@ -83,7 +80,7 @@ export const Login = () => {
             <div className="d-flex flex-col justify-content-center align-items-center w-100">
                 <img className="hero-logo" src="/logo.png" alt="logo" />
                 <h2 className="font-semibold">Selamat Datang!</h2>
-                <p>Masuk dengan akun milikmu yang sudah terdaftar.</p>
+                {/* <p>Masuk dengan akun milikmu yang sudah terdaftar.</p> */}
                 <LoginForm />
             </div>
         </div>

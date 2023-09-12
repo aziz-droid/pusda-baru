@@ -50,7 +50,7 @@ export const TanahIndukUPT = () => {
         luas: "",
     });
 
-  // Mengambil data UPT dari API saat komponen pertama kali dimuat
+    // Mengambil data UPT dari API saat komponen pertama kali dimuat
     useEffect(() => {
         const fetchData = async () => {
             let token = localStorage.getItem("token");
@@ -134,7 +134,7 @@ export const TanahIndukUPT = () => {
                 let formData = new FormData();
                 formData.append("file", file);
                 formData.append("token", token);
-                console.log(formData.get(file)  )
+                console.log(formData.get(file))
 
                 return fetch(apiUrl + `import/file/${params.id}/parent/${authorId}`, {
                     method: "POST",
@@ -160,13 +160,14 @@ export const TanahIndukUPT = () => {
                 setTimeout(() => {
                     window.location.reload();
                 }, 2000);
-            } else {
-                Swal.fire({
-                    title: "Error!",
-                    text: "Data gagal diimport",
-                    icon: "error",
-                });
             }
+            // else {
+            //     Swal.fire({
+            //         title: "Error!",
+            //         text: "Data gagal diimport",
+            //         icon: "error",
+            //     });
+            // }
         });
     };
 

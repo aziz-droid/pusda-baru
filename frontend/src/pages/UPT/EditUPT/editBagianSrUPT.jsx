@@ -77,11 +77,11 @@ export const EditBagianSrUPT = () => {
 
       return navigate(
         "/upt/" +
-          params.id +
-          "/upt/detail/" +
-          params.induk_id +
-          "/tanah-bagian-sr/" +
-          params.children_id
+        params.id +
+        "/upt/detail/" +
+        params.induk_id +
+        "/tanah-bagian-sr/" +
+        params.children_id
       );
     } catch (error) {
       console.log(error);
@@ -108,11 +108,10 @@ export const EditBagianSrUPT = () => {
   };
 
   const ProgressHandler = (e) => {
-    loadTotalRef.current.innerHTML = `${
-      uploadRef.current.files[0].name
-    } uploaded ${Math.round(e.loaded / 1024)}K bytes of ${Math.round(
-      e.total / 1024
-    )}K    bytes`;
+    loadTotalRef.current.innerHTML = `${uploadRef.current.files[0].name
+      } uploaded ${Math.round(e.loaded / 1024)}K bytes of ${Math.round(
+        e.total / 1024
+      )}K    bytes`;
     var percent = (e.loaded / e.total) * 100;
     progressRef.current.value = Math.round(percent);
     statusRef.current.innerHTML = Math.round(percent) + "% uploaded...";

@@ -59,7 +59,7 @@ export const ModalPembayaranEdit = ({
       Swal.fire({
         icon: "success",
         title: "Berhasil",
-        text: resJson.message,
+        // text: resJson.message,
         timer: 1000,
       });
 
@@ -106,11 +106,10 @@ export const ModalPembayaranEdit = ({
   };
 
   const ProgressHandler = (e) => {
-    loadTotalRef.current.innerHTML = `${
-      uploadRef.current.files[0].name
-    } uploaded ${Math.round(e.loaded / 1024)}K bytes of ${Math.round(
-      e.total / 1024
-    )}K    bytes`;
+    loadTotalRef.current.innerHTML = `${uploadRef.current.files[0].name
+      } uploaded ${Math.round(e.loaded / 1024)}K bytes of ${Math.round(
+        e.total / 1024
+      )}K    bytes`;
     var percent = (e.loaded / e.total) * 100;
     progressRef.current.value = Math.round(percent);
     statusRef.current.innerHTML = Math.round(percent) + "% uploaded...";
@@ -191,7 +190,7 @@ export const ModalPembayaranEdit = ({
                   <span style={{ color: "#483EA8" }}>Browse</span>
                 </p>
                 <p className="secondary-text">
-                Supported formates: JPEG, PDF
+                  Supported formates: JPEG, PDF
 
                 </p>
               </label>
