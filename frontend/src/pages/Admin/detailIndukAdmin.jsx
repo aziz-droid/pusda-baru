@@ -318,7 +318,7 @@ export const DetailIndukAdmin = ({ induk_id }) => {
                       zoom={8}
                       scrollWheelZoom={false}
                     >
-                      <ChangeView center={centers} zoom={12} />
+                      <ChangeView center={centers} zoom={8} />
 
                       <TileLayer
                         attribution="&copy; OpenStreetMap"

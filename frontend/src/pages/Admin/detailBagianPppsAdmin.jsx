@@ -177,6 +177,10 @@ export const DetailBagianPppsAdmin = () => {
                             <label htmlFor="luas-bagian">Luas Bagian (m)</label>
                             <h5>{children.large}</h5>
                         </div>
+                        <div>
+                            <label htmlFor="luas-bagian">Kondisi Saat Ini</label>
+                            <h5>{children.present_condition}</h5>
+                        </div>
                     </div>
                     <div
                         className="right-form d-flex flex-col gap-3 w-100 "
