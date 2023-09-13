@@ -1,162 +1,204 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import LayoutUPT from "../../../components/Layout/layoutUPT";
+import { MapContainer, Marker, Popup, TileLayer, useMap } from "react-leaflet";
+import { Icon } from "leaflet";
+import markerIconPng from "leaflet/dist/images/marker-icon.png";
 
 import Swal from "sweetalert2";
 
+const center = {
+  lng: 112.1716087070837,
+  lat: -7.516677410514516,
+};
+
 export const EditBagianPppsUPT = () => {
-    const apiUrl = process.env.REACT_APP_API_URL;
+  const apiUrl = process.env.REACT_APP_API_URL;
 
-    const navigate = useNavigate();
-    const params = useParams();
+  const navigate = useNavigate();
+  const params = useParams();
 
-    const [children, setChildren] = useState({
-        parent_id: params.induk_id,
-        utilization_engagement_type: "",
-        allotment_of_use: "",
-        large: "",
-        present_condition: "",
-        assets_value: "",
-        coordinate: "",
-        description: "",
-    });
+  const [position, setPosition] = useState(center);
+  const [latitude, setLatitude] = useState("");
+  const [longitude, setLongitude] = useState("");
+  const [children, setChildren] = useState({
+    parent_id: params.induk_id,
+    utilization_engagement_type: "",
+    allotment_of_use: "",
+    large: "",
+    present_condition: "",
+    assets_value: "",
+    coordinate: "",
+    latitude: "",
+    longitude: "",
+    description: "",
+  });
 
-    const [message, setMessage] = useState([]);
+  const [message, setMessage] = useState([]);
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-        try {
-            let token = localStorage.getItem("token");
+    try {
+      let token = localStorage.getItem("token");
 
-            let res = await fetch(
-                apiUrl + "childer/update/" + params.children_id,
-                {
-                    method: "POST",
-                    body: JSON.stringify({
-                        ...children,
-                        token,
-                    }),
-                    headers: {
-                        "Content-type": "application/json; charset=UTF-8",
-                    },
-                }
-            );
+      let res = await fetch(apiUrl + "childer/update/" + params.children_id, {
+        method: "POST",
+        body: JSON.stringify({
+          ...children,
+          token,
+        }),
+        headers: {
+          "Content-type": "application/json; charset=UTF-8",
+        },
+      });
 
-            let resJson = await res.json();
+      let resJson = await res.json();
 
-            if (res.status != 200) {
-                let message = resJson.message;
-                if (!Array.isArray(message)) message = [resJson.message];
+      if (res.status != 200) {
+        let message = resJson.message;
+        if (!Array.isArray(message)) message = [resJson.message];
 
-                let messageList = "";
-                message.forEach((item) => {
-                    messageList += "<li>" + item + "</li>";
-                });
+        let messageList = "";
+        message.forEach((item) => {
+          messageList += "<li>" + item + "</li>";
+        });
 
-                return Swal.fire({
-                    icon: "error",
-                    title: "Oops...",
-                    html: messageList,
-                    // text: messageList,
-                    // timer: 1000,
-                });
+        return Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          html: messageList,
+          // text: messageList,
+          // timer: 1000,
+        });
 
-                // return setMessage(message);
-            }
-            Swal.fire({
-                icon: "success",
-                title: "Berhasil",
-                text: resJson.message,
-                timer: 1000,
-            });
+        // return setMessage(message);
+      }
+      Swal.fire({
+        icon: "success",
+        title: "Berhasil",
+        text: resJson.message,
+        timer: 1000,
+      });
 
-            return navigate(
-                "/upt/" + params.id + "/upt/detail/" + params.induk_id
-            );
-        } catch (error) {
-            console.log(error);
+      return navigate("/upt/" + params.id + "/upt/detail/" + params.induk_id);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    let token = localStorage.getItem("token");
+
+    const fetchInduk = async () => {
+      try {
+        let res = await fetch(apiUrl + "childer/" + params.children_id, {
+          method: "GET",
+          headers: {
+            "Content-type": "application/json; charset=UTF-8",
+            Authorization: "Bearer " + token,
+          },
+        });
+
+        let resJson = await res.json();
+
+        if (res.status != 200) {
+          return console.log(resJson.message);
         }
+
+        let resData = resJson.data;
+
+        setChildren(resData);
+
+        let center = {
+          lng: resData.longitude,
+          lat: resData.latitude,
+        };
+        // const center = {
+        //     lng: resData?.longitude,
+        //     lat: resData?.latitude
+        setPosition(center);
+      } catch (error) {
+        console.log(error);
+      }
     };
 
-    useEffect(() => {
-        let token = localStorage.getItem("token");
+    fetchInduk().catch(console.error);
+  }, []);
 
-        const fetchInduk = async () => {
-            try {
-                let res = await fetch(
-                    apiUrl + "childer/" + params.children_id,
-                    {
-                        method: "GET",
-                        headers: {
-                            "Content-type": "application/json; charset=UTF-8",
-                            Authorization: "Bearer " + token,
-                        },
-                    }
-                );
+  const markerRef = useRef(null);
 
-                let resJson = await res.json();
+  const eventHandlers = useMemo(
+    () => ({
+      dragend() {
+        const marker = markerRef.current;
+        if (marker != null) {
+          setPosition(marker.getLatLng());
 
-                if (res.status != 200) {
-                    return console.log(resJson.message);
-                }
+          setLatitude(marker.getLatLng().lat);
+          setLongitude(marker.getLatLng().lng);
 
-                let resData = resJson.data;
+          setChildren({
+            ...children,
+            latitude: marker.getLatLng().lat,
+            longitude: marker.getLatLng().lng,
+          });
+        }
+      },
+    }),
+    [latitude, longitude, children]
+  );
 
-                setChildren(resData);
-            } catch (error) {
-                console.log(error);
-            }
-        };
+  function ChangeView({ center, zoom }) {
+    const map = useMap();
+    map.setView(center, zoom);
+    return null;
+  }
+  return (
+    <LayoutUPT>
+      <div
+        className="d-flex justify-content-between align-items-center mx-3 py-3"
+        style={{
+          borderBottom: "#BCBCBC 1px solid",
+        }}
+      >
+        <div
+          className="font-semibold"
+          style={{ cursor: "pointer" }}
+          onClick={() => {
+            navigate(-1);
+          }}
+        >
+          &larr; &emsp; Kembali
+        </div>
+        <div className="d-flex gap-2">
+          <div
+            className="text-center"
+            style={{
+              cursor: "pointer",
+              border: "#DC2F2F 1px solid",
+              padding: "5px 10px",
+              borderRadius: "5px",
+              color: "#DC2F2F",
+              width: "120px",
+            }}
+            onClick={() => {
+              navigate(-1);
+            }}
+          >
+            Batal
+          </div>
+          <button onClick={handleSubmit} className="primary-btn">
+            Edit Data
+          </button>
+        </div>
+      </div>
+      <div className="mx-5">
+        <h5 style={{ paddingBottom: "20px", paddingTop: "10px" }}>
+          Edit Tanah Bagian
+        </h5>
 
-        fetchInduk().catch(console.error);
-    }, []);
-
-    return (
-        <LayoutUPT>
-            <div
-                className="d-flex justify-content-between align-items-center mx-3 py-3"
-                style={{
-                    borderBottom: "#BCBCBC 1px solid",
-                }}
-            >
-                <div
-                    className="font-semibold"
-                    style={{ cursor: "pointer" }}
-                    onClick={() => {
-                        navigate(-1);
-                    }}
-                >
-                    &larr; &emsp; Kembali
-                </div>
-                <div className="d-flex gap-2">
-                    <div
-                        className="text-center"
-                        style={{
-                            cursor: "pointer",
-                            border: "#DC2F2F 1px solid",
-                            padding: "5px 10px",
-                            borderRadius: "5px",
-                            color: "#DC2F2F",
-                            width: "120px",
-                        }}
-                        onClick={() => {
-                            navigate(-1);
-                        }}
-                    >
-                        Batal
-                    </div>
-                    <button onClick={handleSubmit} className="primary-btn">
-                        Edit Data
-                    </button>
-                </div>
-            </div>
-            <div className="mx-5">
-                <h5 style={{ paddingBottom: "20px", paddingTop: "10px" }}>
-                    Edit Tanah Bagian
-                </h5>
-
-                {/* <div className="error-text-container w-100">
+        {/* <div className="error-text-container w-100">
                     {message.map((item, key) => {
                         return (
                             <div className="text-danger" key={key}>
@@ -166,35 +208,30 @@ export const EditBagianPppsUPT = () => {
                     })}
                 </div> */}
 
-                <form className="d-flex form-tambah-tanah gap-5">
-                    <div className="left-form d-flex flex-col gap-3">
-                        <div>
-                            <label htmlFor="sertifikat-jenispemanfaatan">
-                                Jenis Perikatan
-                            </label>
-                            <select
-                                className="form-select"
-                                value={children.utilization_engagement_type}
-                                onChange={(e) =>
-                                    setChildren({
-                                        ...children,
-                                        utilization_engagement_type:
-                                            e.target.value,
-                                    })
-                                }
-                            >
-                                <option value="" disabled>
-                                    -- Pilih --
-                                </option>
-                                <option value="pakai_sendiri">
-                                    Pakai Sendiri
-                                </option>
-                                <option value="pinjam_pakai">
-                                    Pinjam Pakai
-                                </option>
-                            </select>
-                        </div>
-                        <div>
+        <form className="d-flex form-tambah-tanah gap-5">
+          <div className="left-form d-flex flex-col gap-3  w-100">
+            <div>
+              <label htmlFor="sertifikat-jenispemanfaatan">
+                Jenis Perikatan
+              </label>
+              <select
+                className="form-select"
+                value={children.utilization_engagement_type}
+                onChange={(e) =>
+                  setChildren({
+                    ...children,
+                    utilization_engagement_type: e.target.value,
+                  })
+                }
+              >
+                <option value="" disabled>
+                  -- Pilih --
+                </option>
+                <option value="pakai_sendiri">Pakai Sendiri</option>
+                <option value="pinjam_pakai">Pinjam Pakai</option>
+              </select>
+            </div>
+            {/* <div>
                             <label htmlFor="berlaku-dari">Nilai Asset</label>
                             <input
                                 type="text"
@@ -208,88 +245,128 @@ export const EditBagianPppsUPT = () => {
                                     })
                                 }
                             />
-                        </div>
-                        <div>
-                            <label htmlFor="peruntukan-pemanfaatan">
-                                Peruntukan Pemanfaatan
-                            </label>
-                            <input
-                                type="text"
-                                className="w-100"
-                                name="peruntukan-pemanfaatan"
-                                value={children.allotment_of_use}
-                                onChange={(e) =>
-                                    setChildren({
-                                        ...children,
-                                        allotment_of_use: e.target.value,
-                                    })
-                                }
-                            />
-                        </div>
-                        <div>
-                            <label htmlFor="luas-bagian">Luas Bagian</label>
-                            <input
-                                type="text"
-                                className="w-100"
-                                name="luas-bagian"
-                                value={children.large}
-                                onChange={(e) =>
-                                    setChildren({
-                                        ...children,
-                                        large: e.target.value,
-                                    })
-                                }
-                            />
-                        </div>
-                        <div>
-                            <label htmlFor="kondisi">Kondisi Saat Ini</label>
-                            <input
-                                type="text"
-                                className="w-100"
-                                name="kondisi"
-                                value={children.present_condition}
-                                onChange={(e) =>
-                                    setChildren({
-                                        ...children,
-                                        present_condition: e.target.value,
-                                    })
-                                }
-                            />
-                        </div>
-                    </div>
-                    <div className="right-form d-flex flex-col gap-3">
-                        <div>
-                            <label htmlFor="koordinat">Koordinat (LS BT)</label>
-                            <input
-                                type="text"
-                                className="w-100"
-                                name="koordinat"
-                                value={children.coordinate}
-                                onChange={(e) =>
-                                    setChildren({
-                                        ...children,
-                                        coordinate: e.target.value,
-                                    })
-                                }
-                            />
-                        </div>
-                        <div>
-                            <label htmlFor="keterangan">Keterangan</label>
-                            <textarea
-                                name="keterangan"
-                                className="w-100"
-                                value={children.description}
-                                onChange={(e) =>
-                                    setChildren({
-                                        ...children,
-                                        description: e.target.value,
-                                    })
-                                }
-                            ></textarea>
-                        </div>
-                    </div>
-                </form>
+                        </div> */}
+            <div>
+              <label htmlFor="peruntukan-pemanfaatan">
+                Peruntukan Pemanfaatan
+              </label>
+              <input
+                type="text"
+                className="w-100"
+                name="peruntukan-pemanfaatan"
+                value={children.allotment_of_use}
+                onChange={(e) =>
+                  setChildren({
+                    ...children,
+                    allotment_of_use: e.target.value,
+                  })
+                }
+              />
             </div>
-        </LayoutUPT>
-    );
+            <div>
+              <label htmlFor="luas-bagian">Luas Bagian (m²)</label>
+              <input
+                type="text"
+                className="w-100"
+                name="luas-bagian"
+                value={children.large}
+                onChange={(e) =>
+                  setChildren({
+                    ...children,
+                    large: e.target.value,
+                  })
+                }
+              />
+            </div>
+            <div>
+              <label htmlFor="kondisi">Kondisi Saat Ini</label>
+              <input
+                type="text"
+                className="w-100"
+                name="kondisi"
+                value={children.present_condition}
+                onChange={(e) =>
+                  setChildren({
+                    ...children,
+                    present_condition: e.target.value,
+                  })
+                }
+              />
+            </div>
+            <div>
+              <label htmlFor="keterangan">Keterangan</label>
+              <textarea
+                name="keterangan"
+                className="w-100"
+                value={children.description}
+                onChange={(e) =>
+                  setChildren({
+                    ...children,
+                    description: e.target.value,
+                  })
+                }
+              ></textarea>
+            </div>
+          </div>
+          <div className="right-form d-flex flex-col gap-3  w-100">
+            <div>
+              <MapContainer center={center} zoom={8} scrollWheelZoom={false}>
+                <ChangeView center={position} zoom={12} />
+
+                <TileLayer
+                  attribution="&copy; OpenStreetMap"
+                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                />
+                <Marker
+                  draggable
+                  eventHandlers={eventHandlers}
+                  position={position}
+                  ref={markerRef}
+                  icon={
+                    new Icon({
+                      iconUrl: markerIconPng,
+                      iconSize: [25, 41],
+                      iconAnchor: [12, 41],
+                    })
+                  }
+                ></Marker>
+              </MapContainer>
+            </div>
+            <div>
+              <label htmlFor="latitude">Latitude (LS BT)</label>
+              <input
+                disabled
+                type="text"
+                className="w-100"
+                name="latitude"
+                value={children.latitude}
+                onChange={(e) =>
+                  setChildren({
+                    ...children,
+                    latitude: e.target.value,
+                  })
+                }
+              />
+            </div>
+            <div>
+              <label htmlFor="longitude">longitude (LS BT)</label>
+              <input
+                disabled
+                type="text"
+                className="w-100"
+                name="longitude"
+                value={children.longitude}
+                onChange={(e) =>
+                  setChildren({
+                    ...children,
+                    longitude: e.target.value,
+                  })
+                }
+              />
+            </div>
+          </div>
+        </form>
+      </div>
+    </LayoutUPT>
+  );
 };
