@@ -49,7 +49,7 @@ class AnakImport implements ToModel, WithHeadingRow
             'engagement_date'  => $row['tanggal_perikatan'],
             'engagement_number'  => $row['nomor_perikatan'],
             // 'coordinate'  => $row['koordinat'],
-            'present_condition'  => $row['kondisi_sekarang'] ?? NULL,
+            'present_condition'  => $row['kondisi_saat_ini'] ?? NULL,
             'description'  => $row['keterangan'],
             'application_letter' => 'null',
             'agreement_letter' => 'null',
